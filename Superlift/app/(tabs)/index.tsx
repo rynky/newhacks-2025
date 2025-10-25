@@ -26,13 +26,16 @@ export default function ChatScreen() {
       >
         {/* Bot message */}
         <ThemedView
-          style={{
-            alignSelf: "flex-start",
-            backgroundColor: "#E1E1E1",
-            padding: 10,
-            borderRadius: 20,
-            maxWidth: "75%",
-          }}
+          style={[
+            {
+              alignSelf: "flex-start",
+              backgroundColor: "#332940ff",
+              padding: 10,
+              borderRadius: 20,
+              maxWidth: "75%",
+            },
+            { backgroundColor: styles.buttonStyle.backgroundColor }
+          ]}
         >
           <ThemedText>Hello! How can I help you today?</ThemedText>
         </ThemedView>
@@ -52,13 +55,16 @@ export default function ChatScreen() {
 
         {/* Bot reply */}
         <ThemedView
-          style={{
-            alignSelf: "flex-start",
-            backgroundColor: "#E1E1E1",
-            padding: 10,
-            borderRadius: 20,
-            maxWidth: "75%",
-          }}
+          style={[
+            {
+              alignSelf: "flex-start",
+              backgroundColor: "#332940ff",
+              padding: 10,
+              borderRadius: 20,
+              maxWidth: "75%",
+            },
+            { backgroundColor: styles.buttonStyle.backgroundColor }
+          ]}
         >
           <ThemedText>Why did the developer go broke? Because he used up all his cache!</ThemedText>
         </ThemedView>
