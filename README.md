@@ -5,7 +5,7 @@
 **Built With:** React Native, Expo, SQLite, Gemini API, Victory Native
 **Developers:** Ayaan Adrito, Jake Maly, Raiyan Khan
 
----
+
 
 ## 💡 Inspiration
 
@@ -13,7 +13,7 @@ Tracking workouts can feel tedious, and knowing when to increase the weight is e
 Powered by Google Gemini, we're three lifters building an **AI-powered strength coach** that turns your data into meaningful, personalized guidance. 
 We're helping users progress, recover smarter, and stay consistent.
 
----
+
 
 ## 🚀 What It Does
 
