@@ -15,9 +15,10 @@ export function useAppStyles() {
       modalContent: "#fff",
     },
     dark: {
-      background: "#2e2a33",
+      background: "#1F1b24ff",
       text: "#cfd8d7ff",
-      secondary: "#524c5a", 
+      secondary: "#332940ff", 
+      primary: "#1a083eff",
       modalBackground: "rgba(255,255,255,0.1)",
       modalContent: "#333",
     },
