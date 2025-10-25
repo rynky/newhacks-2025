@@ -1,0 +1,17 @@
+{
+  "name": "newhacks-2025",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Our submission for NewHacks 2025 in the Personal Wellbeing category.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "Ayaan Adrito, Jake Maly, Raiyan Khan",
+  "license": "MIT",
+  "dependencies": {
+    "@google/genai": "^1.27.0",
+    "dotenv": "^17.2.3"
+  }
+}
