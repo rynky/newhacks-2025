@@ -8,11 +8,12 @@ export function useAppStyles() {
 
   const colors = {
     light: {
-      background: "#ffffffff",
-      text: "#000",
-      secondary: "#f1f1f1ff",
-      modalBackground: "rgba(0,0,0,0.5)",
-      modalContent: "#fff",
+      background: "#F2F0EF",
+      text: "#121212ff",
+      secondary: "#C9C8C7",
+      primary: "#FFDE59",
+      modalBackground: "121212ff",
+      modalContent: "#F2F0EF",
     },
     dark: {
       background: "#1F1b24ff",
