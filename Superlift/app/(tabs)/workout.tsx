@@ -7,7 +7,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Pressable } from 'react-native';
 
-export default function HomeScreen() {
+export default function WorkoutScreen() {
   const styles = useAppStyles();
 
   const [message, setMessage] = useState('');
