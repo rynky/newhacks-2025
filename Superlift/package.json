@@ -2,6 +2,7 @@
   "name": "superlift",
   "main": "expo-router/entry",
   "version": "1.0.0",
+  "type": "module",
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
@@ -12,10 +13,13 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
+    "@google/genai": "^1.27.0",
     "@react-navigation/bottom-tabs": "^7.4.0",
     "@react-navigation/elements": "^2.6.3",
     "@react-navigation/native": "^7.1.8",
     "axios": "^1.12.2",
+    "dotenv": "^17.2.3",
+    "dotenv-flow": "^4.1.0",
     "expo": "~54.0.20",
     "expo-constants": "~18.0.10",
     "expo-font": "~14.0.9",
