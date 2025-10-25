@@ -1,98 +1,71 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
-
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
+import React from 'react';
+import { ScrollView, View, Animated } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useAppStyles } from '@/constants/styles';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
 
 export default function AnalyticsScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+  const styles = useAppStyles();
+  const strengthScore = 254900;
+  const fadeAnim = React.useRef(new Animated.Value(0)).current;
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
+  React.useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 500,
+      useNativeDriver: true,
+    }).start();
+  }, []);
+
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: styles.container.backgroundColor }} edges={['top', 'left', 'right']}>
+      <ThemedView style={[styles.container, { paddingTop: 0 }]}>
+        {/* Header */}
+        <ThemedText style={[styles.title, { marginTop: 16, marginBottom: 8 }]}>Your Progress</ThemedText>
+
+        <ScrollView
+          style={{ flex: 1, width: "100%" }}
+          contentContainerStyle={{ paddingBottom: 20 }}
+          showsVerticalScrollIndicator={false}
+        >
+        <Animated.View style={{ opacity: fadeAnim }}>
+          {/* Strength Score Card */}
+          <View style={styles.statCard}>
+            <ThemedText style={styles.subtitle}>Your Strength Score</ThemedText>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8 }}>
+              <ThemedText style={styles.largeNumber}>
+                {strengthScore.toLocaleString()}
+              </ThemedText>
+              <ThemedText style={[styles.largeNumber, { fontSize: 40, marginLeft: 8 }]}>
+                ↑
+              </ThemedText>
+            </View>
+            <ThemedText style={[styles.paragraph, { opacity: 0.7 }]}>
+              +20% month over month! Keep up the fantastic work.
+            </ThemedText>
+          </View>
+
+          {/* Chart Card */}
+          <View style={styles.card}>
+            <ThemedText style={styles.subtitle}>Strength Score - Monthly View</ThemedText>
+            <View style={styles.chartPlaceholder}>
+              <ThemedText style={[styles.paragraph, { opacity: 0.5 }]}>
+                [Chart Coming Soon]
+              </ThemedText>
+            </View>
+          </View>
+
+          {/* Previous Workouts Section */}
+          <View style={styles.card}>
+            <ThemedText style={styles.subtitle}>Previous Workouts</ThemedText>
+            <ThemedText style={[styles.paragraph, { opacity: 0.5, marginTop: 8 }]}>
+              Check the Workout tab to view your history
+            </ThemedText>
+          </View>
+        </Animated.View>
+      </ScrollView>
       </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});
