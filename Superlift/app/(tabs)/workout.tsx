@@ -1,11 +1,12 @@
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { mockRoutines } from "@/constants/mockRoutines";
+import { pastWorkouts } from "@/constants/mockWorkouts";
 import { useAppStyles } from "@/constants/styles";
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Pressable } from 'react-native';
+import ParallaxScrollView from '@/components/parallax-scroll-view';
 
 export default function HomeScreen() {
   const styles = useAppStyles();
@@ -43,15 +44,28 @@ export default function HomeScreen() {
 
       <ThemedText style={styles.subtitle}>My Routines</ThemedText>
 
-      {mockRoutines.map((routine) => (
-        <ThemedView key={routine.id} style={[styles.routineCard, { width: "100%" }]}>
-          <ThemedText style={styles.subtitle}>{routine.name}</ThemedText>
-          <ThemedText style={styles.paragraph}>{routine.duration}</ThemedText>
-          <ThemedText style={styles.paragraph}>
-            {routine.exercises.join(", ")}
-          </ThemedText>
-        </ThemedView>
-      ))}
+      <ThemedView style={[{ width: "100%" }, styles.routineCard]}>
+        {pastWorkouts.map((routine) => (
+          <ThemedView key={routine.id} style={[styles.routineCard, { width: "100%", marginBottom: 10 }]}>
+            <ThemedText style={styles.subtitle}>{routine.name}</ThemedText>
+            <ThemedText style={styles.paragraph}>Duration: {routine.duration}</ThemedText>
+            <ThemedText style={styles.paragraph}>Date: {routine.date}</ThemedText>
+            
+            {routine.exercises.map((exercise, index) => (
+              <ThemedView key={index} style={[{ marginTop: 8 }, styles.exerciseCard]}>
+                <ThemedText style={[styles.paragraph, { fontWeight: 'bold' }]}>
+                  {exercise.name}
+                </ThemedText>
+                {exercise.sets.map((set, setIndex) => (
+                  <ThemedText key={setIndex} style={[styles.paragraph, { marginLeft: 10 }]}>
+                    Set {set.setOrder}: {set.weight} lbs × {set.reps} reps
+                  </ThemedText>
+                ))}
+              </ThemedView>
+            ))}
+          </ThemedView>
+        ))}
+      </ThemedView>
 
     </ThemedView>
   );

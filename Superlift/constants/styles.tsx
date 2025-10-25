@@ -32,6 +32,7 @@ export function useAppStyles() {
       alignItems: "flex-start",
       justifyContent: "center",
       backgroundColor: theme.background,
+      color: theme.secondary,
       gap: 20,
       paddingHorizontal: 20,
     },
@@ -87,6 +88,13 @@ export function useAppStyles() {
     },
     routineCard: {
       backgroundColor: theme.secondary,
+      padding: 15,
+      borderRadius: 10,
+      width: "100%",
+      marginTop: 10,
+    },
+    exerciseCard: {
+      backgroundColor: theme.background,
       padding: 15,
       borderRadius: 10,
       width: "100%",
