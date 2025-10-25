@@ -1,16 +1,13 @@
-
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { pastWorkouts } from "@/constants/mockWorkouts";
 import { useAppStyles } from "@/constants/styles";
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { Pressable } from 'react-native';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
+import { Pressable, ScrollView } from 'react-native';
 
 export default function HomeScreen() {
   const styles = useAppStyles();
-
   const [message, setMessage] = useState('');
 
   useEffect(() => {
@@ -19,9 +16,8 @@ export default function HomeScreen() {
       .catch(err => console.log(err));
   }, []);
 
-    
   return (
-    <ThemedView style={[styles.container, { justifyContent : "flex-start" }, { paddingTop : 20 }]}>
+    <ThemedView style={[styles.container, { justifyContent: "flex-start", paddingTop: 20 }]}>
       <ThemedText style={styles.title}>Quick Start</ThemedText>
 
       <ThemedView style={[styles.rowContainer]}>
@@ -44,7 +40,11 @@ export default function HomeScreen() {
 
       <ThemedText style={styles.subtitle}>My Routines</ThemedText>
 
-      <ThemedView style={[{ width: "100%" }, styles.routineCard]}>
+      <ScrollView 
+        style={{ width: "100%", flex: 1 }}
+        contentContainerStyle={{ paddingBottom: 20, paddingHorizontal: 7,  alignItems: "center" }}
+        showsVerticalScrollIndicator={true}
+      >
         {pastWorkouts.map((routine) => (
           <ThemedView key={routine.id} style={[styles.routineCard, { width: "100%", marginBottom: 10 }]}>
             <ThemedText style={styles.subtitle}>{routine.name}</ThemedText>
@@ -65,8 +65,7 @@ export default function HomeScreen() {
             ))}
           </ThemedView>
         ))}
-      </ThemedView>
-
+      </ScrollView>
     </ThemedView>
   );
 }
