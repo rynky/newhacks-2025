@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Pressable, ScrollView, Animated } from 'react-native';
+import { Pressable, ScrollView, Animated, Modal, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -10,6 +10,7 @@ import axios from 'axios';
 export default function HomeScreen() {
   const styles = useAppStyles();
   const [message, setMessage] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
   // Types for workouts data coming from the DB
   interface SetItem { id?: number; setOrder: number; weight: number; reps: number }
   interface ExerciseItem { id?: number; name: string; sets?: SetItem[] }
@@ -72,6 +73,35 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: styles.container.backgroundColor }} edges={['top', 'left', 'right']}>
       <ThemedView style={[styles.container, { paddingTop: 0 }]}>
+        {/* Modal */}
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <Pressable
+            style={styles.modalContainer}
+            onPress={() => setModalVisible(false)}
+          >
+            <Pressable
+              style={styles.modalContent}
+              onPress={(e) => e.stopPropagation()}
+            >
+              <ThemedText style={[styles.title, { marginBottom: 16 }]}>Hello World</ThemedText>
+              <ThemedText style={[styles.paragraph, { marginBottom: 24 }]}>
+                Your workout tracking will start here!
+              </ThemedText>
+              <Pressable
+                style={styles.primaryButton}
+                onPress={() => setModalVisible(false)}
+              >
+                <ThemedText style={styles.primaryButtonText}>Close</ThemedText>
+              </Pressable>
+            </Pressable>
+          </Pressable>
+        </Modal>
+
         <ScrollView
           style={{ width: "100%", flex: 1 }}
           contentContainerStyle={{ paddingBottom: 20, paddingTop: 16 }}
@@ -79,28 +109,31 @@ export default function HomeScreen() {
         >
           <Animated.View style={{ opacity: fadeAnim }}>
             {/* Quick Start Section */}
-            <ThemedText style={styles.title}>Quick Start</ThemedText>
-          <ThemedView style={[styles.rowContainer, { marginBottom: 20 }]}>
-            <Pressable style={[styles.buttonStyle, styles.flexButton, { padding: 16 }]}>
-              <ThemedText style={styles.subtitle}>+ Start Empty Workout</ThemedText>
-            </Pressable>
-          </ThemedView>
+            <ThemedText style={[styles.title, { marginBottom: 16 }]}>Quick Start</ThemedText>
 
-          {/* Routines Section */}
-          <ThemedText style={styles.title}>Routines</ThemedText>
-          {message ? <ThemedText style={styles.paragraph}>{message}</ThemedText> : null}
-
-          <ThemedView style={[styles.rowContainer, { marginBottom: 20 }]}>
-            <Pressable style={[styles.buttonStyle, styles.flexButton, { padding: 16 }]}>
-              <ThemedText style={styles.subtitle}>New Routine</ThemedText>
+            {/* Primary Action Button */}
+            <Pressable
+              style={[styles.primaryButton, { marginBottom: 32 }]}
+              onPress={() => setModalVisible(true)}
+            >
+              <ThemedText style={styles.primaryButtonText}>+ Start Empty Workout</ThemedText>
             </Pressable>
-            <Pressable style={[styles.buttonStyle, styles.flexButton, { padding: 16 }]}>
-              <ThemedText style={styles.subtitle}>Explore</ThemedText>
-            </Pressable>
-          </ThemedView>
 
-          {/* My Routines */}
-          <ThemedText style={[styles.title, { marginBottom: 8 }]}>My Routines</ThemedText>
+            {/* Routines Section */}
+            <ThemedText style={[styles.title, { marginBottom: 16 }]}>Routines</ThemedText>
+            {message ? <ThemedText style={[styles.paragraph, { marginBottom: 12 }]}>{message}</ThemedText> : null}
+
+            <ThemedView style={[styles.rowContainer, { marginBottom: 24 }]}>
+              <Pressable style={[styles.subtleButton, styles.flexButton]}>
+                <ThemedText style={styles.subtitle}>New Routine</ThemedText>
+              </Pressable>
+              <Pressable style={[styles.subtleButton, styles.flexButton]}>
+                <ThemedText style={styles.subtitle}>Explore</ThemedText>
+              </Pressable>
+            </ThemedView>
+
+          {/* Past Workouts */}
+          <ThemedText style={[styles.title, { marginBottom: 8 }]}>Past Workouts</ThemedText>
 
           {loadingWorkouts ? (
           <ThemedText style={styles.paragraph}>Loading workouts...</ThemedText>
