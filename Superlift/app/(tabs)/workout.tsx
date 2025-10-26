@@ -124,7 +124,7 @@ export default function HomeScreen() {
                   {routine.duration} • {new Date(routine.date).toLocaleDateString()}
                 </ThemedText>
 
-                <ThemedView style={{ marginTop: 12, gap: 6 }}>
+                <ThemedView style={[{ marginTop: 12, gap: 6 }, styles.themeContainer]}>
                   {routine.exercises && routine.exercises.map((exercise, index) => (
                     <ThemedText key={index} style={[styles.paragraph, { opacity: 0.9 }]}>
                       {exercise.sets?.length || 0}x {exercise.name}
