@@ -440,14 +440,35 @@ export function useAppStyles() {
     },
     exercisePickerItem: {
       backgroundColor: theme.background,
-      padding: 16,
+      padding: 12,
       borderRadius: 8,
       marginBottom: 8,
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 12,
+    },
+    exerciseVideoThumbnail: {
+      width: 100,
+      height: 100,
+      borderRadius: 8,
+      backgroundColor: '#000',
+      overflow: 'hidden',
+    },
+    exercisePickerTextArea: {
+      flex: 1,
+      paddingVertical: 8,
     },
     exercisePickerText: {
-      fontSize: 16,
+      fontSize: 18,
+      fontWeight: '600',
       color: theme.text,
       fontFamily: Fonts.sans,
+    },
+    exercisePickerCategory: {
+      fontSize: 14,
+      color: theme.textSecondary,
+      fontFamily: Fonts.sans,
+      marginTop: 4,
     },
     // Finish Workout Dialog
     dialogOverlay: {

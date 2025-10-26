@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   Modal,
   View,
@@ -9,10 +9,11 @@ import {
   Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Video, ResizeMode, AVPlaybackStatus } from 'expo-av';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useAppStyles } from '@/constants/styles';
-import { EXERCISE_LIBRARY, getGroupedExercises, ExerciseDefinition } from '@/constants/exerciseLibrary';
+import { getGroupedExercisesWithVideos, ExerciseDefinition } from '@/constants/exerciseLibrary';
 
 interface WorkoutSet {
   setOrder: number;
@@ -289,7 +290,37 @@ interface ExercisePickerProps {
 
 function ExercisePicker({ visible, onClose, onSelect }: ExercisePickerProps) {
   const styles = useAppStyles();
-  const groupedExercises = getGroupedExercises();
+  const groupedExercises = getGroupedExercisesWithVideos();
+  const [playingVideoId, setPlayingVideoId] = useState<string | null>(null);
+  const videoRefs = useRef<Record<string, Video | null>>({});
+
+  const handleVideoPress = async (exerciseId: string) => {
+    const videoRef = videoRefs.current[exerciseId];
+    if (!videoRef) return;
+
+    // If this video is already playing, pause it
+    if (playingVideoId === exerciseId) {
+      await videoRef.pauseAsync();
+      setPlayingVideoId(null);
+    } else {
+      // Pause currently playing video if any
+      if (playingVideoId && videoRefs.current[playingVideoId]) {
+        await videoRefs.current[playingVideoId]?.pauseAsync();
+      }
+      // Play the new video
+      await videoRef.playAsync();
+      setPlayingVideoId(exerciseId);
+    }
+  };
+
+  const handleExerciseSelect = async (exercise: ExerciseDefinition) => {
+    // Pause any playing video
+    if (playingVideoId && videoRefs.current[playingVideoId]) {
+      await videoRefs.current[playingVideoId]?.pauseAsync();
+    }
+    setPlayingVideoId(null);
+    onSelect(exercise);
+  };
 
   return (
     <Modal
@@ -320,15 +351,38 @@ function ExercisePicker({ visible, onClose, onSelect }: ExercisePickerProps) {
               <View key={category}>
                 <ThemedText style={styles.categoryHeader}>{category}</ThemedText>
                 {exercises.map((exercise) => (
-                  <Pressable
-                    key={exercise.id}
-                    style={styles.exercisePickerItem}
-                    onPress={() => onSelect(exercise)}
-                  >
-                    <ThemedText style={styles.exercisePickerText}>
-                      {exercise.name}
-                    </ThemedText>
-                  </Pressable>
+                  <View key={exercise.id} style={styles.exercisePickerItem}>
+                    {/* Video Thumbnail - Pressable */}
+                    <Pressable
+                      onPress={() => handleVideoPress(exercise.id)}
+                      style={styles.exerciseVideoThumbnail}
+                    >
+                      <Video
+                        ref={(ref) => {
+                          videoRefs.current[exercise.id] = ref;
+                        }}
+                        source={exercise.videoSource}
+                        style={{ width: '100%', height: '100%' }}
+                        resizeMode={ResizeMode.COVER}
+                        isLooping
+                        isMuted
+                        shouldPlay={false}
+                      />
+                    </Pressable>
+
+                    {/* Exercise Name - Pressable */}
+                    <Pressable
+                      style={styles.exercisePickerTextArea}
+                      onPress={() => handleExerciseSelect(exercise)}
+                    >
+                      <ThemedText style={styles.exercisePickerText}>
+                        {exercise.name}
+                      </ThemedText>
+                      <ThemedText style={styles.exercisePickerCategory}>
+                        {category}
+                      </ThemedText>
+                    </Pressable>
+                  </View>
                 ))}
               </View>
             ))}
