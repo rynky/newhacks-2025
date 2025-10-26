@@ -1,15 +1,16 @@
 import React from 'react';
-import { ScrollView, View, Animated } from 'react-native';
+import { Animated, ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useAppStyles } from '@/constants/styles';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import InfoChart from '@/app/LineChart';
+import { useAppStyles } from '@/constants/styles';
+import InfoChart, { getLatestStrengthScore } from '@/app/LineChart';
 
 export default function AnalyticsScreen() {
   const styles = useAppStyles();
-  const strengthScore = 254900;
   const fadeAnim = React.useRef(new Animated.Value(0)).current;
+  const [strengthScore, setStrengthScore] = React.useState<number | null>(null);
+  const [isLoadingScore, setIsLoadingScore] = React.useState(true);
 
   React.useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -17,14 +18,40 @@ export default function AnalyticsScreen() {
       duration: 500,
       useNativeDriver: true,
     }).start();
+  }, [fadeAnim]);
+
+  React.useEffect(() => {
+    let mounted = true;
+
+    (async () => {
+      try {
+        const latestScore = await getLatestStrengthScore();
+        if (mounted) {
+          setStrengthScore(latestScore);
+        }
+      } finally {
+        if (mounted) {
+          setIsLoadingScore(false);
+        }
+      }
+    })();
+
+    return () => {
+      mounted = false;
+    };
   }, []);
+
+  const scoreDisplay = isLoadingScore
+    ? 'Loading...'
+    : strengthScore != null
+      ? strengthScore.toLocaleString()
+      : '0';
 
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: styles.container.backgroundColor }}
-      edges={['top', 'bottom', 'left', 'right']} // include bottom to cover full screen
+      edges={['top', 'bottom', 'left', 'right']}
     >
-      {/* Outer ThemedView ensures background on iOS */}
       <ThemedView
         style={[
           styles.container,
@@ -32,11 +59,10 @@ export default function AnalyticsScreen() {
             flex: 1,
             paddingTop: 0,
             gap: 0,
-            backgroundColor: styles.container.backgroundColor, // enforce background
+            backgroundColor: styles.container.backgroundColor,
           },
         ]}
       >
-        {/* Header */}
         <ThemedText style={[styles.title, { marginTop: 12, marginBottom: 16 }]}>
           Your Progress
         </ThemedText>
@@ -61,7 +87,7 @@ export default function AnalyticsScreen() {
                 }}
               >
                 <ThemedText style={[styles.largeNumber, { flexShrink: 1 }]}>
-                  {strengthScore.toLocaleString()}
+                  {scoreDisplay}
                 </ThemedText>
                 <ThemedText style={[styles.largeNumber, { fontSize: 36, marginLeft: 4 }]}>
                   {' ↑'}
@@ -73,21 +99,8 @@ export default function AnalyticsScreen() {
             </View>
 
             {/* Chart Card */}
-            <View style={[styles.card, { backgroundColor: styles.card.backgroundColor }]}>
-              <ThemedText style={[styles.subtitle, { paddingBottom: 15 }]}>
-                Strength Score - Monthly View
-              </ThemedText>
-              <View style={[styles.chartPlaceholder, { backgroundColor: styles.card.backgroundColor }]}>
-                <InfoChart />
-              </View>
-            </View>
-
-            {/* Previous Workouts Section */}
-            <View style={[styles.card, { backgroundColor: styles.card.backgroundColor }, { marginTop: 25 }]}>
-              <ThemedText style={styles.subtitle}>Previous Workouts</ThemedText>
-              <ThemedText style={[styles.paragraph, { opacity: 0.5, marginTop: 0 }]}>
-                Check the Workout tab to view your history
-              </ThemedText>
+            <View style={[styles.card, { backgroundColor: styles.card.backgroundColor, borderRadius: 16, overflow: 'hidden' }]}>
+              <InfoChart />
             </View>
           </Animated.View>
         </ScrollView>
