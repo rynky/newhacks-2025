@@ -13,7 +13,7 @@ export default function ChatScreen() {
   const colorScheme = useColorScheme();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scrollViewRef = useRef<ScrollView>(null);
-  const { messages, input, setInput, sendMessage, loading } = useChat(); // ⬅️ include loading
+  const { messages, input, setInput, sendMessage, loading } = useChat();
 
   useEffect(() => {
     Animated.timing(fadeAnim, { toValue: 1, duration: 400, useNativeDriver: true }).start();
@@ -21,11 +21,17 @@ export default function ChatScreen() {
 
   useEffect(() => {
     scrollViewRef.current?.scrollToEnd({ animated: true });
-  }, [messages, loading]); // scroll when typing bubble appears too
+  }, [messages, loading]);
 
   const placeholderColor = colorScheme === 'dark' ? '#666666' : '#999999';
   const borderColor = colorScheme === 'dark' ? '#666666' : '#CCCCCC';
-  const sendButtonColor = '#007AFF'; // blue circle
+  const sendButtonColor = '#007AFF';
+
+  const quickActions = [
+    "Show me a log of my recent workouts",
+    "Give me a workout suggestion",
+    "Analyze my progress this week"
+  ];
 
   return (
     <SafeAreaView
@@ -63,13 +69,60 @@ export default function ChatScreen() {
                 </ThemedView>
               ))}
 
-              {/* 👇 Typing bubble appears while waiting for Gemini */}
+              {/* Typing bubble */}
               {loading && (
                 <ThemedView style={styles.messageBubbleBot}>
                   <ThemedText style={styles.paragraph}>...</ThemedText>
                 </ThemedView>
               )}
             </Animated.View>
+          </ScrollView>
+
+          {/* Quick action buttons */}
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={{ marginBottom: 2, maxHeight: 42 }}
+            contentContainerStyle={{
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: 6,
+              paddingHorizontal: 10,
+            }}
+          >
+            {quickActions.map((label, idx) => (
+              <Pressable
+                key={idx}
+                onPress={() => {
+                  setInput(label);
+                  sendMessage();
+                }}
+                style={{
+                  backgroundColor: loading
+                    ? 'rgba(153, 153, 153, 0.3)'  // translucent gray if disabled
+                    : 'rgba(0, 122, 255, 0.3)',   // translucent blue
+                  paddingHorizontal: 12,
+                  height: 42,
+                  borderRadius: 16,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  minWidth: 50,
+                  paddingVertical: 0,
+                }}
+              >
+                <ThemedText
+                  style={{
+                    backgroundColor: 'transparent',
+                    color: '#007AFF', // solid text color for readability
+                    fontSize: 14,
+                    textAlign: 'center',
+                  }}
+                >
+                  {label}
+                </ThemedText>
+              </Pressable>
+            ))}
           </ScrollView>
 
           {/* Input Bar */}
@@ -84,7 +137,6 @@ export default function ChatScreen() {
               backgroundColor: 'transparent',
             }}
           >
-            {/* Text Input */}
             <TextInput
               placeholder="Type a message..."
               placeholderTextColor={placeholderColor}
@@ -105,16 +157,15 @@ export default function ChatScreen() {
               onChangeText={setInput}
               onSubmitEditing={sendMessage}
               returnKeyType="send"
-              multiline={true}
+              multiline
               onContentSizeChange={() => {
                 scrollViewRef.current?.scrollToEnd({ animated: true });
               }}
             />
 
-            {/* Send Button */}
             <Pressable
               onPress={sendMessage}
-              disabled={loading} // optional: disable while AI is responding
+              disabled={loading}
               style={{
                 width: 42,
                 height: 42,
