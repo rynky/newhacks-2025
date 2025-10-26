@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Pressable, ScrollView, Animated, View, ActivityIndicator } from 'react-native';
+import { Pressable, ScrollView, Animated, View, ActivityIndicator, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ThemedText } from '@/components/themed-text';
@@ -7,6 +7,7 @@ import { ThemedView } from '@/components/themed-view';
 import { initDB, getAllWorkouts, insertWorkout } from '@/database/database';
 import { useAppStyles } from "@/constants/styles";
 import WorkoutModal from '@/components/WorkoutModal';
+import { EXERCISE_LIBRARY } from '@/constants/exerciseLibrary';
 
 interface AIWorkout {
   routineName: string;
@@ -19,6 +20,8 @@ interface AIWorkout {
   }>;
   estimatedDuration: string;
 }
+
+const GEMINI_API_KEY = "AIzaSyBni3ytRBPycX36XrqUuZHj8_OLy-PPtNY";
 
 export default function HomeScreen() {
   const styles = useAppStyles();
@@ -112,26 +115,86 @@ export default function HomeScreen() {
   const generateAIWorkout = async () => {
     setLoadingAI(true);
     try {
-      const response = await fetch('http://localhost:3000/generate-workout', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          pastWorkouts: workouts,
-        }),
-      });
+      // Build exercise list
+      const exerciseList = EXERCISE_LIBRARY.map(ex => `${ex.name} (${ex.category})`).join(', ');
+      
+      // Build past workout summary
+      const pastWorkoutSummary = workouts.length > 0 
+        ? workouts.slice(0, 5).map(w => `- ${w.name} on ${new Date(w.date).toLocaleDateString()} with ${w.exercises?.length || 0} exercises`).join('\n')
+        : 'No previous workouts yet.';
+      
+      const prompt = `You are a professional fitness coach for Superlift app. Based on the following exercise library and user's workout history, generate a comprehensive workout routine.
+
+AVAILABLE EXERCISES:
+${exerciseList}
+
+PAST WORKOUTS:
+${pastWorkoutSummary}
+
+Please generate a workout routine that:
+1. Is well-balanced across muscle groups
+2. Takes into account the user's recent activity
+3. Includes 6-8 exercises
+4. Provides sets and rep ranges for each exercise
+5. Is challenging but realistic
+
+Format your response as JSON with the following structure:
+{
+  "routineName": "Name of the workout",
+  "description": "Brief description",
+  "exercises": [
+    {
+      "name": "Exercise name",
+      "category": "Muscle group",
+      "sets": "3-4",
+      "reps": "8-12"
+    }
+  ],
+  "estimatedDuration": "60 minutes"
+}`;
+
+      console.log('🤖 Calling Gemini API directly...');
+      
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${GEMINI_API_KEY}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+          }),
+        }
+      );
 
       if (!response.ok) {
-        throw new Error('Failed to generate workout');
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const workoutRoutine = await response.json();
+      const data = await response.json();
+      const responseText = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      
+      // Try to extract JSON from the response
+      const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+      let workoutRoutine;
+      
+      if (jsonMatch) {
+        workoutRoutine = JSON.parse(jsonMatch[0]);
+      } else {
+        // Fallback if JSON parsing fails
+        workoutRoutine = {
+          routineName: "AI-Generated Workout",
+          description: responseText,
+          exercises: [],
+          estimatedDuration: "45-60 minutes"
+        };
+      }
+      
       setAiWorkout(workoutRoutine);
       setShowAISuggestion(true);
-    } catch (error) {
-      console.error('Error generating AI workout:', error);
-      alert('Failed to generate AI workout. Make sure the server is running on localhost:3000');
+      console.log('✅ AI workout generated successfully:', workoutRoutine);
+    } catch (error: any) {
+      console.error('❌ Error generating AI workout:', error);
+      alert(`Failed to generate AI workout: ${error.message}`);
     } finally {
       setLoadingAI(false);
     }
@@ -155,7 +218,7 @@ export default function HomeScreen() {
           <Animated.View style={{ opacity: fadeAnim }}>
             {/* Hero Greeting */}
             <ThemedText style={styles.heroGreeting}>
-              Ready to crush it, Alex?
+              Ready to crush it, NewHacks attendee?
             </ThemedText>
 
             {/* AI Workout Card */}
