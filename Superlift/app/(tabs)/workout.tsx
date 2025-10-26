@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Pressable, ScrollView, Animated, Modal, View } from 'react-native';
+import { Pressable, ScrollView, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { initDB, getAllWorkouts } from '@/database/database';
+import { initDB, getAllWorkouts, insertWorkout } from '@/database/database';
 import { useAppStyles } from "@/constants/styles";
+import WorkoutModal from '@/components/WorkoutModal';
 import axios from 'axios';
 
 export default function HomeScreen() {
@@ -49,37 +50,49 @@ export default function HomeScreen() {
     return () => { mounted = false; };
   }, []);
 
+  const handleSaveWorkout = async (workoutName: string, exercises: any[]) => {
+    try {
+      // Transform the data to match database format
+      const workoutData = {
+        id: Date.now().toString(),
+        name: workoutName,
+        duration: '0min',
+        date: new Date().toISOString(),
+        exercises: exercises.map(exercise => ({
+          name: exercise.name,
+          sets: exercise.sets
+            .filter((set: any) => set.weight && set.reps) // Only include completed sets
+            .map((set: any) => ({
+              setOrder: set.setOrder,
+              weight: parseFloat(set.weight) || 0,
+              reps: parseInt(set.reps) || 0,
+            })),
+        })).filter(exercise => exercise.sets.length > 0), // Only include exercises with sets
+      };
+
+      // Save to database
+      await insertWorkout(workoutData);
+
+      // Refresh workout list
+      const updatedWorkouts = await getAllWorkouts();
+      setWorkouts(updatedWorkouts || []);
+
+      // Close modal
+      setModalVisible(false);
+    } catch (error) {
+      console.error('Error saving workout:', error);
+    }
+  };
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: styles.container.backgroundColor }} edges={['top', 'left', 'right']}>
       <ThemedView style={[styles.container, { paddingTop: 0 }]}>
-        {/* Modal */}
-        <Modal
-          animationType="fade"
-          transparent={true}
+        {/* Workout Modal */}
+        <WorkoutModal
           visible={modalVisible}
-          onRequestClose={() => setModalVisible(false)}
-        >
-          <Pressable
-            style={styles.modalContainer}
-            onPress={() => setModalVisible(false)}
-          >
-            <Pressable
-              style={styles.modalContent}
-              onPress={(e) => e.stopPropagation()}
-            >
-              <ThemedText style={[styles.title, { marginBottom: 16 }]}>Hello World</ThemedText>
-              <ThemedText style={[styles.paragraph, { marginBottom: 24 }]}>
-                Your workout tracking will start here!
-              </ThemedText>
-              <Pressable
-                style={styles.primaryButton}
-                onPress={() => setModalVisible(false)}
-              >
-                <ThemedText style={styles.primaryButtonText}>Close</ThemedText>
-              </Pressable>
-            </Pressable>
-          </Pressable>
-        </Modal>
+          onClose={() => setModalVisible(false)}
+          onSave={handleSaveWorkout}
+        />
 
         <ScrollView
           style={{ width: "100%", flex: 1 }}
@@ -125,7 +138,7 @@ export default function HomeScreen() {
                 </ThemedText>
 
                 <ThemedView style={[{ marginTop: 12, gap: 6 }, styles.themeContainer]}>
-                  {routine.exercises && routine.exercises.map((exercise, index) => (
+                  {routine.exercises && routine.exercises.map((exercise: any, index: number) => (
                     <ThemedText key={index} style={[styles.paragraph, { opacity: 0.9 }]}>
                       {exercise.sets?.length || 0}x {exercise.name}
                     </ThemedText>

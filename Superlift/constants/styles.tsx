@@ -259,7 +259,253 @@ export function useAppStyles() {
       backgroundColor: theme.background,
       padding: 10,
       borderRadius: 10,
-    }
+    },
+    // Workout Modal Styles
+    fullScreenModal: {
+      flex: 1,
+      backgroundColor: theme.background,
+    },
+    workoutModalHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingHorizontal: 20,
+      paddingVertical: 16,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.secondary,
+      backgroundColor: theme.cardBackground,
+    },
+    workoutModalContent: {
+      flex: 1,
+      paddingHorizontal: 20,
+      paddingTop: 16,
+    },
+    emptyWorkoutState: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingVertical: 40,
+    },
+    addExerciseButton: {
+      backgroundColor: theme.accent,
+      padding: 16,
+      borderRadius: 12,
+      alignItems: 'center',
+      marginVertical: 16,
+    },
+    addExerciseButtonText: {
+      color: '#FFFFFF',
+      fontSize: 16,
+      fontWeight: '600',
+      fontFamily: Fonts.sans,
+    },
+    workoutExerciseCard: {
+      backgroundColor: theme.cardBackground,
+      borderRadius: 12,
+      padding: 16,
+      marginBottom: 16,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 2,
+    },
+    exerciseHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: 12,
+    },
+    exerciseName: {
+      fontSize: 18,
+      fontWeight: '600',
+      color: theme.text,
+      fontFamily: Fonts.mono,
+      flex: 1,
+    },
+    removeExerciseButton: {
+      padding: 8,
+    },
+    removeExerciseText: {
+      color: '#FF4444',
+      fontSize: 16,
+      fontWeight: '600',
+      fontFamily: Fonts.sans,
+    },
+    setRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 8,
+      gap: 8,
+    },
+    setLabel: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: theme.text,
+      fontFamily: Fonts.mono,
+      width: 40,
+    },
+    setInput: {
+      flex: 1,
+      backgroundColor: theme.inputBackground,
+      color: theme.inputText,
+      borderRadius: 8,
+      padding: 12,
+      fontSize: 16,
+      fontFamily: Fonts.sans,
+    },
+    setInputLabel: {
+      fontSize: 14,
+      color: theme.textSecondary,
+      fontFamily: Fonts.sans,
+      marginBottom: 4,
+    },
+    setInputContainer: {
+      flex: 1,
+    },
+    removeSetButton: {
+      padding: 8,
+    },
+    removeSetText: {
+      color: '#FF4444',
+      fontSize: 20,
+      fontWeight: 'bold',
+    },
+    addSetButton: {
+      backgroundColor: theme.secondary,
+      padding: 12,
+      borderRadius: 8,
+      alignItems: 'center',
+      marginTop: 8,
+    },
+    addSetButtonText: {
+      color: theme.text,
+      fontSize: 14,
+      fontWeight: '600',
+      fontFamily: Fonts.sans,
+    },
+    headerButton: {
+      padding: 8,
+    },
+    headerButtonText: {
+      fontSize: 16,
+      fontWeight: '600',
+      fontFamily: Fonts.sans,
+    },
+    closeButtonText: {
+      color: theme.text,
+    },
+    finishButtonText: {
+      color: theme.success,
+    },
+    // Exercise Picker Styles
+    pickerModalContainer: {
+      flex: 1,
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      justifyContent: 'flex-end',
+    },
+    pickerModalContent: {
+      backgroundColor: theme.cardBackground,
+      borderTopLeftRadius: 20,
+      borderTopRightRadius: 20,
+      maxHeight: '80%',
+      paddingTop: 20,
+    },
+    pickerHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingHorizontal: 20,
+      paddingBottom: 16,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.secondary,
+    },
+    pickerTitle: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      color: theme.text,
+      fontFamily: Fonts.mono,
+    },
+    pickerList: {
+      paddingHorizontal: 20,
+      paddingBottom: 20,
+    },
+    categoryHeader: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      color: theme.text,
+      fontFamily: Fonts.mono,
+      marginTop: 16,
+      marginBottom: 8,
+    },
+    exercisePickerItem: {
+      backgroundColor: theme.background,
+      padding: 16,
+      borderRadius: 8,
+      marginBottom: 8,
+    },
+    exercisePickerText: {
+      fontSize: 16,
+      color: theme.text,
+      fontFamily: Fonts.sans,
+    },
+    // Finish Workout Dialog
+    dialogOverlay: {
+      flex: 1,
+      backgroundColor: 'rgba(0, 0, 0, 0.6)',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    dialogContent: {
+      backgroundColor: theme.cardBackground,
+      borderRadius: 16,
+      padding: 24,
+      width: '85%',
+      maxWidth: 400,
+    },
+    dialogTitle: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      color: theme.text,
+      fontFamily: Fonts.mono,
+      marginBottom: 16,
+    },
+    dialogInput: {
+      backgroundColor: theme.inputBackground,
+      color: theme.inputText,
+      borderRadius: 12,
+      padding: 14,
+      fontSize: 16,
+      fontFamily: Fonts.sans,
+      marginBottom: 20,
+    },
+    dialogButtons: {
+      flexDirection: 'row',
+      gap: 12,
+    },
+    dialogButton: {
+      flex: 1,
+      padding: 14,
+      borderRadius: 12,
+      alignItems: 'center',
+    },
+    dialogButtonCancel: {
+      backgroundColor: theme.secondary,
+    },
+    dialogButtonSave: {
+      backgroundColor: theme.success,
+    },
+    dialogButtonText: {
+      fontSize: 16,
+      fontWeight: '600',
+      fontFamily: Fonts.sans,
+    },
+    dialogButtonTextCancel: {
+      color: theme.text,
+    },
+    dialogButtonTextSave: {
+      color: '#FFFFFF',
+    },
   });
 
   return styles;
