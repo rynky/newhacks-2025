@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Pressable, ScrollView, Animated } from 'react-native';
+import { Pressable, ScrollView, Animated, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { initDB, getAllWorkouts, insertWorkout } from '@/database/database';
 import { useAppStyles } from "@/constants/styles";
 import WorkoutModal from '@/components/WorkoutModal';
-import axios from 'axios';
 
 export default function HomeScreen() {
   const styles = useAppStyles();
-  const [message, setMessage] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [workouts, setWorkouts] = useState<any[]>([]);
   const [loadingWorkouts, setLoadingWorkouts] = useState(true);
@@ -19,10 +18,6 @@ export default function HomeScreen() {
   const fadeAnim = React.useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    axios.get('http://192.168.1.xxx:3000')
-      .then(res => setMessage(res.data))
-      .catch(err => console.log(err));
-
     Animated.timing(fadeAnim, {
       toValue: 1,
       duration: 400,
@@ -95,6 +90,7 @@ export default function HomeScreen() {
     }
   };
 
+<<<<<<< HEAD
   const toggleWorkoutExpansion = (workoutId: string) => {
     const isExpanding = expandedWorkoutId !== workoutId;
     const newExpandedId = isExpanding ? workoutId : null;
@@ -128,6 +124,20 @@ export default function HomeScreen() {
     return {
       transform: [{ rotate: rotateAnim || '0deg' }]
     };
+=======
+  // Helper function to format relative dates
+  const getRelativeDate = (dateString: string): string => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInMs = now.getTime() - date.getTime();
+    const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+    if (diffInDays === 0) return 'Today';
+    if (diffInDays === 1) return 'Yesterday';
+    if (diffInDays <= 7) return `${diffInDays} Days Ago`;
+    if (diffInDays <= 30) return `${Math.floor(diffInDays / 7)} Weeks Ago`;
+    return date.toLocaleDateString();
+>>>>>>> 6e7d7f17b4d5049d427d79b0076111d1c1f2063d
   };
 
   return (
@@ -149,34 +159,74 @@ export default function HomeScreen() {
           }}
           showsVerticalScrollIndicator={false}
         >
+<<<<<<< HEAD
           <Animated.View style={{ 
             opacity: fadeAnim, 
             backgroundColor: styles.container.backgroundColor 
           }}>
             {/* Quick Start Section */}
             <ThemedText style={[styles.title, { marginBottom: 16 }]}>Quick Start</ThemedText>
+=======
+          <Animated.View style={{ opacity: fadeAnim }}>
+            {/* Hero Greeting */}
+            <ThemedText style={styles.heroGreeting}>
+              Ready to crush it, Alex?
+            </ThemedText>
+>>>>>>> 6e7d7f17b4d5049d427d79b0076111d1c1f2063d
 
-            {/* Primary Action Button */}
+            {/* AI Workout Card */}
             <Pressable
-              style={[styles.primaryButton, { marginBottom: 32 }]}
+              style={styles.aiWorkoutCard}
               onPress={() => setModalVisible(true)}
             >
-              <ThemedText style={styles.primaryButtonText}>+ Start Empty Workout</ThemedText>
+              <LinearGradient
+                colors={['#4B7BEC', '#2E5AAC']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.aiWorkoutCardContent}
+              >
+                <ThemedText style={styles.aiWorkoutLabel}>
+                  Today's AI-Optimized Workout
+                </ThemedText>
+                <ThemedText style={styles.aiWorkoutTitle}>
+                  Full Body Strength - Phase 2
+                </ThemedText>
+                <ThemedText style={styles.aiWorkoutDetails}>
+                  Est. 60 mins | 8 Exercises
+                </ThemedText>
+                <Pressable
+                  style={styles.startWorkoutButton}
+                  onPress={() => setModalVisible(true)}
+                >
+                  <ThemedText style={styles.startWorkoutButtonText}>
+                    Start Workout
+                  </ThemedText>
+                </Pressable>
+              </LinearGradient>
             </Pressable>
 
-            {/* Routines Section */}
-            <ThemedText style={[styles.title, { marginBottom: 16 }]}>Routines</ThemedText>
-            {message ? <ThemedText style={[styles.paragraph, { marginBottom: 12 }]}>{message}</ThemedText> : null}
+            {/* Recent Activity */}
+            <ThemedText style={styles.recentActivityHeader}>
+              Recent Activity
+            </ThemedText>
 
-            <ThemedView style={[styles.rowContainer, { marginBottom: 24 }]}>
-              <Pressable style={[styles.subtleButton, styles.flexButton]}>
-                <ThemedText style={styles.subtitle}>Create Routine</ThemedText>
-              </Pressable>
-              <Pressable style={[styles.subtleButton, styles.flexButton]}>
-                <ThemedText style={styles.subtitle}>Select Routine</ThemedText>
-              </Pressable>
-            </ThemedView>
+            {loadingWorkouts ? (
+              <ThemedText style={styles.paragraph}>Loading workouts...</ThemedText>
+            ) : (
+              workouts.map((workout) => (
+                <View key={workout.id} style={styles.activityCard}>
+                  <View style={styles.activityCardHeader}>
+                    <ThemedText style={styles.activityTitle}>
+                      {workout.name}
+                    </ThemedText>
+                    <Pressable onPress={() => console.log('View details:', workout.id)}>
+                      <ThemedText style={styles.viewDetailsLink}>
+                        View Details &gt;
+                      </ThemedText>
+                    </Pressable>
+                  </View>
 
+<<<<<<< HEAD
             {/* Past Workouts */}
             <ThemedText style={[styles.title, { marginBottom: 8 }]}>Past Workouts</ThemedText>
 
@@ -305,6 +355,18 @@ export default function HomeScreen() {
                     )}
                   </ThemedView>
                 </Pressable>
+=======
+                  <ThemedText style={styles.activityTimestamp}>
+                    {getRelativeDate(workout.date)}
+                  </ThemedText>
+
+                  {workout.exercises && workout.exercises.map((exercise: any, index: number) => (
+                    <ThemedText key={index} style={styles.activityExerciseList}>
+                      {exercise.sets?.length || 0}x {exercise.name}
+                    </ThemedText>
+                  ))}
+                </View>
+>>>>>>> 6e7d7f17b4d5049d427d79b0076111d1c1f2063d
               ))
             )}
           </Animated.View>

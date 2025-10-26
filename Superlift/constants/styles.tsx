@@ -532,6 +532,112 @@ export function useAppStyles() {
     dialogButtonTextSave: {
       color: '#FFFFFF',
     },
+    // Hero Greeting & AI Workout Card Styles
+    heroGreeting: {
+      fontSize: 28,
+      fontWeight: 'bold',
+      color: theme.text,
+      fontFamily: Fonts.mono,
+      marginBottom: 20,
+      lineHeight: 36,
+    },
+    aiWorkoutCard: {
+      borderRadius: 16,
+      overflow: 'hidden',
+      marginBottom: 32,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.2,
+      shadowRadius: 12,
+      elevation: 6,
+    },
+    aiWorkoutCardContent: {
+      padding: 24,
+      minHeight: 180,
+      justifyContent: 'center',
+    },
+    aiWorkoutLabel: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: 'rgba(255, 255, 255, 0.9)',
+      fontFamily: Fonts.sans,
+      marginBottom: 12,
+      textAlign: 'center',
+    },
+    aiWorkoutTitle: {
+      fontSize: 22,
+      fontWeight: 'bold',
+      color: '#FFFFFF',
+      fontFamily: Fonts.mono,
+      marginBottom: 12,
+      textAlign: 'center',
+    },
+    aiWorkoutDetails: {
+      fontSize: 14,
+      color: 'rgba(255, 255, 255, 0.8)',
+      fontFamily: Fonts.sans,
+      marginBottom: 20,
+      textAlign: 'center',
+    },
+    startWorkoutButton: {
+      backgroundColor: theme.success,
+      padding: 16,
+      borderRadius: 12,
+      alignItems: 'center',
+      alignSelf: 'center',
+      width: '80%',
+      maxWidth: 300,
+    },
+    startWorkoutButtonText: {
+      color: '#FFFFFF',
+      fontSize: 16,
+      fontWeight: 'bold',
+      fontFamily: Fonts.sans,
+    },
+    // Recent Activity Styles
+    recentActivityHeader: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      color: theme.text,
+      fontFamily: Fonts.mono,
+      marginBottom: 16,
+    },
+    activityCard: {
+      paddingVertical: 16,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.secondary,
+    },
+    activityCardHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'flex-start',
+      marginBottom: 8,
+    },
+    activityTitle: {
+      fontSize: 18,
+      fontWeight: '600',
+      color: theme.text,
+      fontFamily: Fonts.mono,
+      flex: 1,
+    },
+    viewDetailsLink: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: theme.success,
+      fontFamily: Fonts.sans,
+    },
+    activityTimestamp: {
+      fontSize: 14,
+      color: theme.textSecondary,
+      fontFamily: Fonts.sans,
+      marginBottom: 12,
+    },
+    activityExerciseList: {
+      fontSize: 14,
+      color: theme.textSecondary,
+      fontFamily: Fonts.sans,
+      marginBottom: 4,
+    },
   });
 
   return styles;
