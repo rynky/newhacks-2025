@@ -11,12 +11,7 @@ export default function HomeScreen() {
   const styles = useAppStyles();
   const [message, setMessage] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
-  // Types for workouts data coming from the DB
-  interface SetItem { id?: number; setOrder: number; weight: number; reps: number }
-  interface ExerciseItem { id?: number; name: string; sets?: SetItem[] }
-  interface WorkoutItem { id: string; name: string; duration?: string; date?: string; exercises?: ExerciseItem[] }
-
-  const [workouts, setWorkouts] = useState<WorkoutItem[]>([]);
+  const [workouts, setWorkouts] = useState<any[]>([]);
   const [loadingWorkouts, setLoadingWorkouts] = useState(true);
   const fadeAnim = React.useRef(new Animated.Value(0)).current;
 
@@ -120,28 +115,25 @@ export default function HomeScreen() {
           <ThemedText style={[styles.title, { marginBottom: 8 }]}>Past Workouts</ThemedText>
 
           {loadingWorkouts ? (
-          <ThemedText style={styles.paragraph}>Loading workouts...</ThemedText>
-        ) : (
-          workouts.map((routine: WorkoutItem) => (
-            <ThemedView key={routine.id} style={[styles.routineCard, { width: "100%", marginBottom: 10 }]}> 
-              <ThemedText style={styles.subtitle}>{routine.name}</ThemedText>
-              <ThemedText style={[styles.paragraph, { opacity: 0.7, marginTop: 4 }]}>Duration: {routine.duration}</ThemedText>
-              <ThemedText style={[styles.paragraph, { opacity: 0.7 }]}>Date: {routine.date}</ThemedText>
-              {Array.isArray(routine.exercises) && routine.exercises.map((exercise: ExerciseItem, index: number) => (
-                <ThemedView key={exercise.id ?? index} style={styles.exerciseCard}>
-                  <ThemedText style={[styles.paragraph, { fontWeight: 'bold' }]}>
-                    {exercise.name}
-                  </ThemedText>
-                  {Array.isArray(exercise.sets) && exercise.sets.map((set: SetItem, setIndex: number) => (
-                    <ThemedText key={set.id ?? setIndex} style={[styles.paragraph, { marginLeft: 10, opacity: 0.8 }]}>
-                      Set {set.setOrder}: {set.weight} lbs × {set.reps} reps
+            <ThemedText style={styles.paragraph}>Loading workouts...</ThemedText>
+          ) : (
+            workouts.map((routine) => (
+              <ThemedView key={routine.id} style={styles.routineCard}>
+                <ThemedText style={styles.subtitle}>{routine.name}</ThemedText>
+                <ThemedText style={[styles.paragraph, { opacity: 0.7, marginTop: 4 }]}>
+                  {routine.duration} • {new Date(routine.date).toLocaleDateString()}
+                </ThemedText>
+
+                <ThemedView style={{ marginTop: 12, gap: 6 }}>
+                  {routine.exercises && routine.exercises.map((exercise, index) => (
+                    <ThemedText key={index} style={[styles.paragraph, { opacity: 0.9 }]}>
+                      {exercise.sets?.length || 0}x {exercise.name}
                     </ThemedText>
                   ))}
                 </ThemedView>
-              ))}
-            </ThemedView>
-          ))
-        )}
+              </ThemedView>
+            ))
+          )}
         </Animated.View>
       </ScrollView>
       </ThemedView>
