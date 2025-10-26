@@ -157,11 +157,26 @@ const createWebFallbackDB = () => {
   };
 
   return {
-    transaction: (cb) => {
+    // transaction should match expo-sqlite's signature: transaction(cb, error, success)
+    // ensure the fallback calls the provided error/success callbacks so callers
+    // that await transaction completion (like initDB) don't hang.
+    transaction: (cb, error = () => {}, success = () => {}) => {
       try {
+        // execute the callback synchronously like the real implementation
         cb(tx);
+        // call the success callback to indicate transaction finished
+        try {
+          if (typeof success === 'function') success();
+        } catch (e) {
+          // swallow errors from success callback
+        }
       } catch (e) {
-        // nothing
+        // on error call the provided error callback if present
+        try {
+          if (typeof error === 'function') error(e);
+        } catch (err) {
+          // swallow
+        }
       }
     }
   };
