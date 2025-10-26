@@ -72,6 +72,9 @@ export default function InfoChart() {
   const [labels, setLabels] = useState<string[]>([]);
   const [dataPoints, setDataPoints] = useState<number[]>([]);
 
+  // Get theme-aware colors
+  const isDarkMode = styles.container.backgroundColor === '#1F1B24';
+
   useEffect(() => {
     const fetchData = async () => {
       const workouts = (await getAllWorkouts()) as WorkoutRecord[];
@@ -128,7 +131,7 @@ export default function InfoChart() {
         style={{
           fontSize: 18,
           fontWeight: '700',
-          color: '#FFFFFF',
+          color: isDarkMode ? '#FFFFFF' : '#121212',
           marginBottom: 20,
           letterSpacing: 0.3,
         }}
@@ -143,7 +146,8 @@ export default function InfoChart() {
             datasets: [
               {
                 data: dataPoints.length ? dataPoints : [315, 405, 450, 495, 540].map(v => v * 25),
-                strokeWidth: 5, // Thicker, more vibrant line
+                strokeWidth: 6, // Even thicker line for better visibility
+                color: (opacity = 1) => `rgba(62, 220, 129, 1)`, // Force full opacity
               },
             ],
           }}
@@ -156,14 +160,16 @@ export default function InfoChart() {
             backgroundColor: styles.card.backgroundColor,
             backgroundGradientFrom: styles.card.backgroundColor,
             backgroundGradientTo: styles.card.backgroundColor,
-            fillShadowGradientFrom: 'rgba(62, 220, 129, 0.1)', // Subtle gradient fill matching success color
-            fillShadowGradientTo: 'rgba(62, 220, 129, 0.05)',
+            fillShadowGradientFrom: 'rgba(62, 220, 129, 0.25)', // More prominent gradient fill
+            fillShadowGradientTo: 'rgba(62, 220, 129, 0.08)',
+            fillShadowGradientFromOpacity: 0.25, // Increased opacity
+            fillShadowGradientToOpacity: 0.08,
             decimalPlaces: 0,
-            color: (opacity = 1) => `rgba(62, 220, 129, ${opacity})`, // Match strength score green (#3EDC81)
-            labelColor: () => '#D1D5DB', // Lighter gray for labels
+            color: (opacity = 1) => `rgba(62, 220, 129, 1)`, // Full opacity for vibrant line
+            labelColor: () => isDarkMode ? '#E5E7EB' : '#374151', // Dark gray for light theme, light gray for dark theme
             propsForBackgroundLines: {
               strokeWidth: 1,
-              stroke: 'rgba(156, 163, 175, 0.15)', // Very muted grid lines
+              stroke: isDarkMode ? 'rgba(156, 163, 175, 0.2)' : 'rgba(107, 114, 128, 0.25)', // Theme-aware grid lines
               strokeDasharray: '0', // Solid lines instead of dashed
             },
             style: {
@@ -174,7 +180,7 @@ export default function InfoChart() {
               strokeWidth: "0",
             },
             propsForLabels: {
-              fill: '#D1D5DB', // Lighter gray for labels
+              fill: isDarkMode ? '#E5E7EB' : '#374151', // Dark gray for light theme, light gray for dark theme
               fontSize: 11,
             },
           }}
