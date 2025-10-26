@@ -102,30 +102,29 @@ export default function HomeScreen() {
           {/* My Routines */}
           <ThemedText style={[styles.title, { marginBottom: 8 }]}>My Routines</ThemedText>
 
-          {pastWorkouts.map((routine) => (
-            <ThemedView key={routine.id} style={styles.routineCard}>
+          {loadingWorkouts ? (
+          <ThemedText style={styles.paragraph}>Loading workouts...</ThemedText>
+        ) : (
+          workouts.map((routine: WorkoutItem) => (
+            <ThemedView key={routine.id} style={[styles.routineCard, { width: "100%", marginBottom: 10 }]}> 
               <ThemedText style={styles.subtitle}>{routine.name}</ThemedText>
-              <ThemedText style={[styles.paragraph, { opacity: 0.7, marginTop: 4 }]}>
-                Duration: {routine.duration}
-              </ThemedText>
-              <ThemedText style={[styles.paragraph, { opacity: 0.7 }]}>
-                Date: {routine.date}
-              </ThemedText>
-
-              {routine.exercises.map((exercise, index) => (
-                <ThemedView key={index} style={styles.exerciseCard}>
+              <ThemedText style={[styles.paragraph, { opacity: 0.7, marginTop: 4 }]}>Duration: {routine.duration}</ThemedText>
+              <ThemedText style={[styles.paragraph, { opacity: 0.7 }]}>Date: {routine.date}</ThemedText>
+              {Array.isArray(routine.exercises) && routine.exercises.map((exercise: ExerciseItem, index: number) => (
+                <ThemedView key={exercise.id ?? index} style={styles.exerciseCard}>
                   <ThemedText style={[styles.paragraph, { fontWeight: 'bold' }]}>
                     {exercise.name}
                   </ThemedText>
-                  {exercise.sets.map((set, setIndex) => (
-                    <ThemedText key={setIndex} style={[styles.paragraph, { marginLeft: 10, opacity: 0.8 }]}>
+                  {Array.isArray(exercise.sets) && exercise.sets.map((set: SetItem, setIndex: number) => (
+                    <ThemedText key={set.id ?? setIndex} style={[styles.paragraph, { marginLeft: 10, opacity: 0.8 }]}>
                       Set {set.setOrder}: {set.weight} lbs × {set.reps} reps
                     </ThemedText>
                   ))}
                 </ThemedView>
               ))}
             </ThemedView>
-          ))}
+          ))
+        )}
         </Animated.View>
       </ScrollView>
       </ThemedView>
