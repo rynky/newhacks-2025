@@ -20,28 +20,28 @@ export default function AnalyticsScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: styles.container.backgroundColor }} edges={['top', 'left', 'right']}>
-      <ThemedView style={[styles.container, { paddingTop: 0 }]}>
+      <ThemedView style={[styles.container, { paddingTop: 0, gap: 0 }]}>
         {/* Header */}
-        <ThemedText style={[styles.title, { marginTop: 16, marginBottom: 8 }]}>Your Progress</ThemedText>
+        <ThemedText style={[styles.title, { marginTop: 12, marginBottom: 16 }]}>Your Progress</ThemedText>
 
         <ScrollView
           style={{ flex: 1, width: "100%" }}
-          contentContainerStyle={{ paddingBottom: 20 }}
+          contentContainerStyle={{ paddingBottom: 20, gap: 12 }}
           showsVerticalScrollIndicator={false}
         >
         <Animated.View style={{ opacity: fadeAnim }}>
           {/* Strength Score Card */}
           <View style={styles.statCard}>
             <ThemedText style={styles.subtitle}>Your Strength Score</ThemedText>
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8 }}>
-              <ThemedText style={styles.largeNumber}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 12, flexWrap: 'wrap' }}>
+              <ThemedText style={[styles.largeNumber, { flexShrink: 1 }]}>
                 {strengthScore.toLocaleString()}
               </ThemedText>
-              <ThemedText style={[styles.largeNumber, { fontSize: 40, marginLeft: 8 }]}>
-                ↑
+              <ThemedText style={[styles.largeNumber, { fontSize: 36, marginLeft: 4 }]}>
+                {' ↑'}
               </ThemedText>
             </View>
-            <ThemedText style={[styles.paragraph, { opacity: 0.7 }]}>
+            <ThemedText style={[styles.paragraph, { opacity: 0.7, marginTop: 4 }]}>
               +20% month over month! Keep up the fantastic work.
             </ThemedText>
           </View>
