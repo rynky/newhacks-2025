@@ -3,13 +3,20 @@ import { Pressable, ScrollView, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { pastWorkouts } from "@/constants/mockWorkouts";
+import { initDB, getAllWorkouts } from '@/database/database';
 import { useAppStyles } from "@/constants/styles";
 import axios from 'axios';
 
 export default function HomeScreen() {
   const styles = useAppStyles();
   const [message, setMessage] = useState('');
+  // Types for workouts data coming from the DB
+  interface SetItem { id?: number; setOrder: number; weight: number; reps: number }
+  interface ExerciseItem { id?: number; name: string; sets?: SetItem[] }
+  interface WorkoutItem { id: string; name: string; duration?: string; date?: string; exercises?: ExerciseItem[] }
+
+  const [workouts, setWorkouts] = useState<WorkoutItem[]>([]);
+  const [loadingWorkouts, setLoadingWorkouts] = useState(true);
   const fadeAnim = React.useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -22,6 +29,44 @@ export default function HomeScreen() {
       duration: 400,
       useNativeDriver: true,
     }).start();
+  }, []);
+
+  // Initialize DB and load workouts (initDB auto-seeds mock data once)
+  useEffect(() => {
+    let mounted = true;
+
+    (async () => {
+      try {
+        await initDB();
+        const rows = await getAllWorkouts();
+        if (mounted) setWorkouts(rows || []);
+      } catch (e) {
+        console.log('DB init/load error', e);
+      } finally {
+        if (mounted) setLoadingWorkouts(false);
+      }
+    })();
+
+    return () => { mounted = false; };
+  }, []);
+
+  // Initialize DB and load workouts (initDB auto-seeds mock data once)
+  useEffect(() => {
+    let mounted = true;
+
+    (async () => {
+      try {
+        await initDB();
+        const rows = await getAllWorkouts();
+        if (mounted) setWorkouts(rows || []);
+      } catch (e) {
+        console.log('DB init/load error', e);
+      } finally {
+        if (mounted) setLoadingWorkouts(false);
+      }
+    })();
+
+    return () => { mounted = false; };
   }, []);
 
   return (
