@@ -125,7 +125,7 @@ export default function HomeScreen() {
                 </ThemedText>
 
                 <ThemedView style={{ marginTop: 12, gap: 6 }}>
-                  {routine.exercises && routine.exercises.map((exercise, index) => (
+                  {routine.exercises && routine.exercises.map((exercise: any, index: number) => (
                     <ThemedText key={index} style={[styles.paragraph, { opacity: 0.9 }]}>
                       {exercise.sets?.length || 0}x {exercise.name}
                     </ThemedText>
