@@ -9,7 +9,7 @@ export default function InfoChart() {
   const styles = useAppStyles(); // get theme colors
 
   return (
-    <ThemedView style={{ backgroundColor: styles.container.backgroundColor }}>
+    <ThemedView style={[{ backgroundColor: styles.container.backgroundColor }, { marginTop: 25 }]}>
       <ThemedText style={[styles.title, { padding: 5 }]}>Strength Score — Monthly Chart</ThemedText>
       <LineChart
         data={{
@@ -35,10 +35,12 @@ export default function InfoChart() {
         yAxisSuffix={""}
         yAxisInterval={1}
         chartConfig={{
-          // use the app container background so the chart blends with the UI
-          backgroundColor: styles.container.backgroundColor,
-          backgroundGradientFrom: styles.container.backgroundColor,
-          backgroundGradientTo: styles.container.backgroundColor,
+          // use the card background (where the chart is placed) so the chart
+          // matches the surrounding UI on both web and native. If card color
+          // isn't present, fall back to transparent to avoid a black fill.
+          backgroundColor: styles.card?.backgroundColor ?? 'transparent',
+          backgroundGradientFrom: styles.card?.backgroundColor ?? 'transparent',
+          backgroundGradientTo: styles.card?.backgroundColor ?? 'transparent',
           decimalPlaces: 2,
           color: (opacity = 1) => `rgba(75, 123, 236, ${opacity})`, // line color
           labelColor: (opacity = 1) =>
@@ -54,8 +56,9 @@ export default function InfoChart() {
         }}
         bezier
         style={{
-          marginVertical: 8,
+          marginTop: 0,
           borderRadius: 16,
+          marginBottom: 25,
         }}
       />
       {/* Axis titles (chart-kit doesn't provide built-in axis title props) */}
