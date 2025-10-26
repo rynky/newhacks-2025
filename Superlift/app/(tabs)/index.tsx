@@ -13,7 +13,7 @@ export default function ChatScreen() {
   const colorScheme = useColorScheme();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scrollViewRef = useRef<ScrollView>(null);
-  const { messages, input, setInput, sendMessage } = useChat();
+  const { messages, input, setInput, sendMessage, loading } = useChat(); // ⬅️ include loading
 
   useEffect(() => {
     Animated.timing(fadeAnim, { toValue: 1, duration: 400, useNativeDriver: true }).start();
@@ -21,21 +21,26 @@ export default function ChatScreen() {
 
   useEffect(() => {
     scrollViewRef.current?.scrollToEnd({ animated: true });
-  }, [messages]);
+  }, [messages, loading]); // scroll when typing bubble appears too
 
   const placeholderColor = colorScheme === 'dark' ? '#666666' : '#999999';
   const borderColor = colorScheme === 'dark' ? '#666666' : '#CCCCCC';
   const sendButtonColor = '#007AFF'; // blue circle
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: styles.container.backgroundColor }} edges={['top', 'left', 'right']}>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: styles.container.backgroundColor }}
+      edges={['top', 'left', 'right']}
+    >
       <KeyboardAvoidingView
         style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : "height"} // 'height' on Android avoids over-moving
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <ThemedView style={[styles.container, { paddingTop: 0, flex: 1 }]}>
           {/* Header */}
-          <ThemedText style={[styles.title, { marginTop: 16, marginBottom: 8 }]}>AI Chatbot</ThemedText>
+          <ThemedText style={[styles.title, { marginTop: 16, marginBottom: 8 }]}>
+            AI Chatbot
+          </ThemedText>
 
           {/* Chat Messages */}
           <ScrollView
@@ -57,6 +62,13 @@ export default function ChatScreen() {
                   </ThemedText>
                 </ThemedView>
               ))}
+
+              {/* 👇 Typing bubble appears while waiting for Gemini */}
+              {loading && (
+                <ThemedView style={styles.messageBubbleBot}>
+                  <ThemedText style={styles.paragraph}>...</ThemedText>
+                </ThemedView>
+              )}
             </Animated.View>
           </ScrollView>
 
@@ -69,7 +81,7 @@ export default function ChatScreen() {
               gap: 10,
               paddingHorizontal: 0,
               paddingBottom: 10,
-              backgroundColor: 'transparent', // fully transparent, no black box
+              backgroundColor: 'transparent',
             }}
           >
             {/* Text Input */}
@@ -93,22 +105,21 @@ export default function ChatScreen() {
               onChangeText={setInput}
               onSubmitEditing={sendMessage}
               returnKeyType="send"
-              multiline={true} // allow multiple lines
-              onContentSizeChange={(e) => {
-                // force scroll to end when typing multiple lines
+              multiline={true}
+              onContentSizeChange={() => {
                 scrollViewRef.current?.scrollToEnd({ animated: true });
               }}
-/>
-
+            />
 
             {/* Send Button */}
             <Pressable
               onPress={sendMessage}
+              disabled={loading} // optional: disable while AI is responding
               style={{
                 width: 42,
                 height: 42,
                 borderRadius: 20,
-                backgroundColor: sendButtonColor,
+                backgroundColor: loading ? '#999999' : sendButtonColor,
                 justifyContent: 'center',
                 alignItems: 'center',
               }}
