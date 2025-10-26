@@ -260,6 +260,11 @@ export function useAppStyles() {
       padding: 10,
       borderRadius: 10,
     },
+    secondaryThemeContainer: {
+      backgroundColor: theme.secondary,
+      padding: 10,
+      borderRadius: 10,
+    },
     // Workout Modal Styles
     fullScreenModal: {
       flex: 1,
