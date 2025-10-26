@@ -3,6 +3,7 @@ export interface ExerciseDefinition {
   id: string;
   name: string;
   category: string;
+  videoSource?: any; // Video file from assets
 }
 
 export const EXERCISE_CATEGORIES = [
@@ -17,7 +18,7 @@ export const EXERCISE_CATEGORIES = [
 
 export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
   // Chest
-  { id: 'bench-press-barbell', name: 'Bench Press (Barbell)', category: 'Chest' },
+  { id: 'bench-press-barbell', name: 'Bench Press (Barbell)', category: 'Chest', videoSource: require('@/assets/videos/bench-press-barbell-video.mp4') },
   { id: 'bench-press-dumbbell', name: 'Bench Press (Dumbbell)', category: 'Chest' },
   { id: 'incline-bench-press', name: 'Incline Bench Press', category: 'Chest' },
   { id: 'decline-bench-press', name: 'Decline Bench Press', category: 'Chest' },
@@ -26,7 +27,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
   { id: 'cable-crossover', name: 'Cable Crossover', category: 'Chest' },
 
   // Back
-  { id: 'deadlift-barbell', name: 'Deadlift (Barbell)', category: 'Back' },
+  { id: 'deadlift-barbell', name: 'Deadlift (Barbell)', category: 'Back', videoSource: require('@/assets/videos/deadlift-barbell-video.mp4') },
   { id: 'bent-over-row', name: 'Bent Over Row', category: 'Back' },
   { id: 'pull-ups', name: 'Pull-ups', category: 'Back' },
   { id: 'lat-pulldown', name: 'Lat Pulldown', category: 'Back' },
@@ -35,8 +36,8 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
   { id: 'face-pulls', name: 'Face Pulls', category: 'Back' },
 
   // Legs
-  { id: 'squat-barbell', name: 'Squat (Barbell)', category: 'Legs' },
-  { id: 'leg-press', name: 'Leg Press', category: 'Legs' },
+  { id: 'squat-barbell', name: 'Squat (Barbell)', category: 'Legs', videoSource: require('@/assets/videos/squat-barbell-video.mp4') },
+  { id: 'leg-press', name: 'Leg Press', category: 'Legs', videoSource: require('@/assets/videos/leg-press-video.mp4') },
   { id: 'leg-extension', name: 'Leg Extension', category: 'Legs' },
   { id: 'leg-curl', name: 'Leg Curl', category: 'Legs' },
   { id: 'lunges', name: 'Lunges', category: 'Legs' },
@@ -54,7 +55,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
   { id: 'shrugs', name: 'Shrugs', category: 'Shoulders' },
 
   // Arms
-  { id: 'bicep-curl-barbell', name: 'Bicep Curl (Barbell)', category: 'Arms' },
+  { id: 'bicep-curl-barbell', name: 'Bicep Curl (Barbell)', category: 'Arms', videoSource: require('@/assets/videos/bicep-curl-barbell-video.mp4') },
   { id: 'bicep-curl-dumbbell', name: 'Bicep Curl (Dumbbell)', category: 'Arms' },
   { id: 'hammer-curl', name: 'Hammer Curl', category: 'Arms' },
   { id: 'preacher-curl', name: 'Preacher Curl', category: 'Arms' },
@@ -89,6 +90,27 @@ export const getGroupedExercises = (): Record<string, ExerciseDefinition[]> => {
 
   EXERCISE_CATEGORIES.forEach(category => {
     grouped[category] = getExercisesByCategory(category);
+  });
+
+  return grouped;
+};
+
+// Helper function to get only exercises with videos
+export const getExercisesWithVideos = (): ExerciseDefinition[] => {
+  return EXERCISE_LIBRARY.filter(exercise => exercise.videoSource !== undefined);
+};
+
+// Helper function to get exercises with videos grouped by category
+export const getGroupedExercisesWithVideos = (): Record<string, ExerciseDefinition[]> => {
+  const grouped: Record<string, ExerciseDefinition[]> = {};
+
+  EXERCISE_CATEGORIES.forEach(category => {
+    const exercisesWithVideos = EXERCISE_LIBRARY.filter(
+      exercise => exercise.category === category && exercise.videoSource !== undefined
+    );
+    if (exercisesWithVideos.length > 0) {
+      grouped[category] = exercisesWithVideos;
+    }
   });
 
   return grouped;
