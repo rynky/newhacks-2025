@@ -67,7 +67,7 @@ export default function ChatScreen() {
               alignItems: "center",
               width: "100%",
               gap: 10,
-              paddingHorizontal: 10,
+              paddingHorizontal: 0,
               paddingBottom: 10,
               backgroundColor: 'transparent', // fully transparent, no black box
             }}
@@ -86,21 +86,28 @@ export default function ChatScreen() {
                   borderRadius: 16,
                   paddingHorizontal: 12,
                   paddingVertical: 8,
+                  maxHeight: 120,
                 },
               ]}
               value={input}
               onChangeText={setInput}
               onSubmitEditing={sendMessage}
               returnKeyType="send"
-            />
+              multiline={true} // allow multiple lines
+              onContentSizeChange={(e) => {
+                // force scroll to end when typing multiple lines
+                scrollViewRef.current?.scrollToEnd({ animated: true });
+              }}
+/>
+
 
             {/* Send Button */}
             <Pressable
               onPress={sendMessage}
               style={{
-                width: 48,
-                height: 48,
-                borderRadius: 24,
+                width: 42,
+                height: 42,
+                borderRadius: 20,
                 backgroundColor: sendButtonColor,
                 justifyContent: 'center',
                 alignItems: 'center',
