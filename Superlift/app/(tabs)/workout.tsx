@@ -40,26 +40,10 @@ export default function HomeScreen() {
       try {
         await initDB();
         const rows = await getAllWorkouts();
-        if (mounted) setWorkouts(rows || []);
-      } catch (e) {
-        console.log('DB init/load error', e);
-      } finally {
-        if (mounted) setLoadingWorkouts(false);
-      }
-    })();
-
-    return () => { mounted = false; };
-  }, []);
-
-  // Initialize DB and load workouts (initDB auto-seeds mock data once)
-  useEffect(() => {
-    let mounted = true;
-
-    (async () => {
-      try {
-        await initDB();
-        const rows = await getAllWorkouts();
-        if (mounted) setWorkouts(rows || []);
+        if (mounted) {
+          console.log('[workout] loaded workouts', Array.isArray(rows) ? rows.length : typeof rows, rows);
+          setWorkouts(rows || []);
+        }
       } catch (e) {
         console.log('DB init/load error', e);
       } finally {
@@ -125,10 +109,10 @@ export default function HomeScreen() {
 
             <ThemedView style={[styles.rowContainer, { marginBottom: 24 }]}>
               <Pressable style={[styles.subtleButton, styles.flexButton]}>
-                <ThemedText style={styles.subtitle}>New Routine</ThemedText>
+                <ThemedText style={styles.subtitle}>Create Routine</ThemedText>
               </Pressable>
               <Pressable style={[styles.subtleButton, styles.flexButton]}>
-                <ThemedText style={styles.subtitle}>Explore</ThemedText>
+                <ThemedText style={styles.subtitle}>Select Routine</ThemedText>
               </Pressable>
             </ThemedView>
 
