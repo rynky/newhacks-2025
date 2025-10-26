@@ -2,7 +2,7 @@
 
 **Category:** Personal Wellbeing  
 **Hackathon:** NewHacks 2025  
-**Built With:** React Native, Expo, SQLite, Gemini API, Victory Native
+**Built With:** React Native, Expo, SQLite, Gemini API, React Native Chart Kit
 
 **Developers:** Ayaan Adrito, Jake Maly, Raiyan Khan
 
