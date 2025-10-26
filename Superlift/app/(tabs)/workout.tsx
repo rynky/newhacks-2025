@@ -170,7 +170,7 @@ export default function HomeScreen() {
           <Animated.View style={{ opacity: fadeAnim }}>
             {/* Hero Greeting */}
             <ThemedText style={styles.heroGreeting}>
-              Ready to crush it, Alex?
+              Ready to crush it, NewHacks Attendee?
             </ThemedText>
 >>>>>>> 6e7d7f17b4d5049d427d79b0076111d1c1f2063d
 
