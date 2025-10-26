@@ -29,25 +29,25 @@ export const Colors = {
 
 export const Fonts = Platform.select({
   ios: {
-    /** iOS `UIFontDescriptorSystemDesignDefault` */
-    sans: 'system-ui',
+    /** Custom font - sans replacement */
+    sans: 'inter',
     /** iOS `UIFontDescriptorSystemDesignSerif` */
     serif: 'ui-serif',
     /** iOS `UIFontDescriptorSystemDesignRounded` */
     rounded: 'ui-rounded',
-    /** iOS `UIFontDescriptorSystemDesignMonospaced` */
-    mono: 'ui-monospace',
+    /** Custom font - mono replacement */
+    mono: 'archivoblack',
   },
   default: {
-    sans: 'normal',
+    sans: 'inter',
     serif: 'serif',
     rounded: 'normal',
-    mono: 'monospace',
+    mono: 'archivoblack',
   },
   web: {
-    sans: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+    sans: 'inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
     serif: "Georgia, 'Times New Roman', serif",
     rounded: "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif",
-    mono: "SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
+    mono: "archivoblack, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace",
   },
 });

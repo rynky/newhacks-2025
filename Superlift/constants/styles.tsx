@@ -1,30 +1,46 @@
 // components/styles.js
-import { useColorScheme } from "@/hooks/use-color-scheme";
 import { StyleSheet } from "react-native";
+import { useColorScheme } from "@/hooks/use-color-scheme";
+import { Fonts } from "./theme";
 
 
 export function useAppStyles() {
-  const colorScheme = useColorScheme(); // 'light' or 'dark'
+  const colorScheme = useColorScheme();
 
   const colors = {
     light: {
-      background: "#ffffffff",
-      text: "#000",
-      secondary: "#f1f1f1ff",
-      modalBackground: "rgba(0,0,0,0.5)",
-      modalContent: "#fff",
+      background: "#F2F0EF",
+      text: "#121212",
+      textSecondary: "#666666",
+      secondary: "#C9C8C7",
+      primary: "#FFDE59",
+      accent: "#4B7BEC",
+      success: "#2ECC71",
+      cardBackground: "#FFFFFF",
+      inputBackground: "#E8E8E8",
+      inputText: "#121212",
+      placeholderText: "#999999",
+      modalBackground: "#121212",
+      modalContent: "#F2F0EF",
     },
     dark: {
-      background: "#1F1b24ff",
-      text: "#cfd8d7ff",
-      secondary: "#332940ff", 
-      primary: "#1a083eff",
+      background: "#1F1B24",
+      text: "#CFD8D7",
+      textSecondary: "#999999",
+      secondary: "#332940",
+      primary: "#1A083E",
+      accent: "#5B8BFC",
+      success: "#3EDC81",
+      cardBackground: "#2A2633",
+      inputBackground: "#3A3644",
+      inputText: "#CFD8D7",
+      placeholderText: "#666666",
       modalBackground: "rgba(255,255,255,0.1)",
-      modalContent: "#333",
+      modalContent: "#333333",
     },
   };
 
-  const theme = colorScheme === "dark" ? colors.dark : colors.light;
+  const theme = colors[colorScheme ?? 'light'];
 
   const styles = StyleSheet.create({
     container: {
@@ -40,16 +56,19 @@ export function useAppStyles() {
       fontSize: 20,
       fontWeight: "bold",
       color: theme.text,
+      fontFamily: Fonts.mono,
     },
     subtitle: {
       fontSize: 18,
       fontWeight: "normal",
       color: theme.text,
+      fontFamily: Fonts.mono,
     },
     paragraph: {
       fontSize: 16,
       fontWeight: "300",
       color: theme.text,
+      fontFamily: Fonts.sans,
     },
     separator: {
       marginVertical: 30,
@@ -87,18 +106,23 @@ export function useAppStyles() {
       justifyContent: "center", 
     },
     routineCard: {
-      backgroundColor: theme.secondary,
-      padding: 15,
-      borderRadius: 10,
+      backgroundColor: theme.cardBackground,
+      padding: 16,
+      borderRadius: 12,
       width: "100%",
-      marginTop: 10,
+      marginVertical: 8,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 2,
     },
     exerciseCard: {
-      backgroundColor: theme.background,
-      padding: 15,
-      borderRadius: 10,
+      backgroundColor: theme.secondary,
+      padding: 12,
+      borderRadius: 8,
       width: "100%",
-      marginTop: 10,
+      marginTop: 8,
     },
     titleContainer: {
         flexDirection: 'row',
@@ -115,6 +139,87 @@ export function useAppStyles() {
         bottom: 0,
         left: 0,
         position: 'absolute',
+    },
+    card: {
+      backgroundColor: theme.cardBackground,
+      borderRadius: 16,
+      padding: 20,
+      marginVertical: 8,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 8,
+      elevation: 3,
+    },
+    input: {
+      backgroundColor: theme.inputBackground,
+      color: theme.inputText,
+      borderRadius: 20,
+      padding: 12,
+      fontSize: 16,
+      fontFamily: Fonts.sans,
+    },
+    messageBubbleBot: {
+      alignSelf: "flex-start",
+      backgroundColor: theme.cardBackground,
+      padding: 12,
+      borderRadius: 16,
+      borderBottomLeftRadius: 4,
+      maxWidth: "75%",
+      marginVertical: 4,
+    },
+    messageBubbleUser: {
+      alignSelf: "flex-end",
+      backgroundColor: theme.accent,
+      padding: 12,
+      borderRadius: 16,
+      borderBottomRightRadius: 4,
+      maxWidth: "75%",
+      marginVertical: 4,
+    },
+    messageBubbleUserText: {
+      color: "#FFFFFF",
+      fontSize: 16,
+      fontFamily: Fonts.sans,
+    },
+    sendButton: {
+      backgroundColor: theme.accent,
+      padding: 12,
+      borderRadius: 20,
+      justifyContent: "center",
+      alignItems: "center",
+      width: 44,
+      height: 44,
+    },
+    largeNumber: {
+      fontSize: 56,
+      fontWeight: "bold",
+      color: theme.success,
+      fontFamily: Fonts.mono,
+    },
+    statCard: {
+      backgroundColor: theme.cardBackground,
+      borderRadius: 16,
+      padding: 24,
+      marginBottom: 16,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 8,
+      elevation: 3,
+    },
+    chartPlaceholder: {
+      backgroundColor: theme.cardBackground,
+      borderRadius: 16,
+      padding: 24,
+      height: 200,
+      justifyContent: "center",
+      alignItems: "center",
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 8,
+      elevation: 3,
     },
   });
 
