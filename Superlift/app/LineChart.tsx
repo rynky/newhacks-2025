@@ -72,6 +72,9 @@ export default function InfoChart() {
   const [labels, setLabels] = useState<string[]>([]);
   const [dataPoints, setDataPoints] = useState<number[]>([]);
 
+  // Get theme-aware colors
+  const isDarkMode = styles.container.backgroundColor === '#1F1B24';
+
   useEffect(() => {
     const fetchData = async () => {
       const workouts = (await getAllWorkouts()) as WorkoutRecord[];
@@ -128,7 +131,7 @@ export default function InfoChart() {
         style={{
           fontSize: 18,
           fontWeight: '700',
-          color: '#FFFFFF',
+          color: isDarkMode ? '#FFFFFF' : '#121212',
           marginBottom: 20,
           letterSpacing: 0.3,
         }}
@@ -163,10 +166,10 @@ export default function InfoChart() {
             fillShadowGradientToOpacity: 0.08,
             decimalPlaces: 0,
             color: (opacity = 1) => `rgba(62, 220, 129, 1)`, // Full opacity for vibrant line
-            labelColor: () => '#E5E7EB', // Brighter labels for better visibility
+            labelColor: () => isDarkMode ? '#E5E7EB' : '#374151', // Dark gray for light theme, light gray for dark theme
             propsForBackgroundLines: {
               strokeWidth: 1,
-              stroke: 'rgba(156, 163, 175, 0.2)', // Slightly more visible grid lines
+              stroke: isDarkMode ? 'rgba(156, 163, 175, 0.2)' : 'rgba(107, 114, 128, 0.25)', // Theme-aware grid lines
               strokeDasharray: '0', // Solid lines instead of dashed
             },
             style: {
@@ -177,7 +180,7 @@ export default function InfoChart() {
               strokeWidth: "0",
             },
             propsForLabels: {
-              fill: '#E5E7EB', // Brighter labels for better visibility
+              fill: isDarkMode ? '#E5E7EB' : '#374151', // Dark gray for light theme, light gray for dark theme
               fontSize: 11,
             },
           }}
