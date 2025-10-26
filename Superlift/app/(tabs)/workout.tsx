@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Pressable, ScrollView, Animated, View, ActivityIndicator, Platform } from 'react-native';
+import { Pressable, ScrollView, Animated, View, ActivityIndicator, Platform, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ThemedText } from '@/components/themed-text';
@@ -22,6 +22,7 @@ interface AIWorkout {
 }
 
 const GEMINI_API_KEY = "AIzaSyBni3ytRBPycX36XrqUuZHj8_OLy-PPtNY";
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
 export default function HomeScreen() {
   const styles = useAppStyles();
@@ -31,6 +32,7 @@ export default function HomeScreen() {
   const [aiWorkout, setAiWorkout] = useState<AIWorkout | null>(null);
   const [loadingAI, setLoadingAI] = useState(false);
   const [showAISuggestion, setShowAISuggestion] = useState(false);
+  const [selectedExercises, setSelectedExercises] = useState<any[]>([]);
   const fadeAnim = React.useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -90,8 +92,9 @@ export default function HomeScreen() {
       const updatedWorkouts = await getAllWorkouts();
       setWorkouts(updatedWorkouts || []);
 
-      // Close modal
+      // Close modal and reset selected exercises
       setModalVisible(false);
+      setSelectedExercises([]);
     } catch (error) {
       console.error('Error saving workout:', error);
     }
@@ -200,14 +203,49 @@ Format your response as JSON with the following structure:
     }
   };
 
+  // Convert AI workout exercises to modal format and open modal
+  const startAIWorkout = () => {
+    if (!aiWorkout) return;
+
+    // Convert AI exercises to the format expected by the modal
+    const exercisesForModal = aiWorkout.exercises.map(exercise => {
+      // Extract set count from the sets string (e.g., "3-4" -> 3)
+      const setCount = parseInt(exercise.sets.split('-')[0]) || 3;
+      
+      // Create empty sets for the modal
+      const sets = Array.from({ length: setCount }, (_, index) => ({
+        setOrder: index + 1,
+        weight: '',
+        reps: '',
+        completed: false
+      }));
+
+      return {
+        name: exercise.name,
+        category: exercise.category,
+        sets: sets,
+        targetReps: exercise.reps,
+        targetSets: exercise.sets
+      };
+    });
+
+    setSelectedExercises(exercisesForModal);
+    setModalVisible(true);
+  };
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: styles.container.backgroundColor }} edges={['top', 'left', 'right']}>
       <ThemedView style={[styles.container, { paddingTop: 0 }]}>
         {/* Workout Modal */}
         <WorkoutModal
           visible={modalVisible}
-          onClose={() => setModalVisible(false)}
+          onClose={() => {
+            setModalVisible(false);
+            setSelectedExercises([]);
+          }}
           onSave={handleSaveWorkout}
+          preSelectedExercises={selectedExercises}
+          workoutName={aiWorkout?.routineName || 'AI Generated Workout'}
         />
 
         <ScrollView
@@ -224,7 +262,7 @@ Format your response as JSON with the following structure:
             {/* AI Workout Card */}
             <Pressable
               style={styles.aiWorkoutCard}
-              onPress={() => setModalVisible(true)}
+              onPress={aiWorkout ? startAIWorkout : () => setModalVisible(true)}
             >
               <LinearGradient
                 colors={['#4B7BEC', '#2E5AAC']}
@@ -243,7 +281,7 @@ Format your response as JSON with the following structure:
                 </ThemedText>
                 <Pressable
                   style={styles.startWorkoutButton}
-                  onPress={() => setModalVisible(true)}
+                  onPress={aiWorkout ? startAIWorkout : () => setModalVisible(true)}
                 >
                   <ThemedText style={styles.startWorkoutButtonText}>
                     Start Workout
@@ -276,53 +314,82 @@ Format your response as JSON with the following structure:
 
             {/* AI Workout Suggestion Display */}
             {showAISuggestion && aiWorkout && (
-              <View style={{
-                backgroundColor: '#F3F4F6',
-                padding: 16,
-                borderRadius: 12,
-                marginTop: 16,
-              }}>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                  <ThemedText style={{ fontSize: 18, fontWeight: '700', color: '#1F2937' }}>
-                    {aiWorkout.routineName}
-                  </ThemedText>
-                  <Pressable onPress={() => setShowAISuggestion(false)}>
-                    <ThemedText style={{ color: '#6366F1', fontSize: 14 }}>✕</ThemedText>
-                  </Pressable>
-                </View>
-                
-                <ThemedText style={{ fontSize: 14, color: '#6B7280', marginBottom: 12 }}>
-                  {aiWorkout.description}
-                </ThemedText>
-                
-                <ThemedText style={{ fontSize: 16, fontWeight: '600', color: '#1F2937', marginBottom: 8 }}>
-                  Exercises:
-                </ThemedText>
-                
-                {aiWorkout.exercises.map((exercise, index) => (
-                  <View key={index} style={{
-                    backgroundColor: '#fff',
-                    padding: 12,
-                    borderRadius: 8,
-                    marginBottom: 8,
-                  }}>
-                    <ThemedText style={{ fontSize: 15, fontWeight: '600', color: '#1F2937' }}>
-                      {exercise.name}
+              <View style={[styles.aiWorkoutCard, { marginTop: 16 }]}>
+                <LinearGradient
+                  colors={['#4B7BEC', '#2E5AAC']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={{
+                    padding: 20,
+                    borderRadius: 16,
+                    maxHeight: screenHeight * 0.6, // Limit height for smaller screens
+                  }}
+                >
+                  <ScrollView 
+                    style={{ maxHeight: screenHeight * 0.55 }}
+                    showsVerticalScrollIndicator={true}
+                  >
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                      <ThemedText style={[styles.aiWorkoutTitle, { flex: 1, marginRight: 16 }]}>
+                        {aiWorkout.routineName}
+                      </ThemedText>
+                      <Pressable 
+                        onPress={() => setShowAISuggestion(false)}
+                        style={{ padding: 4 }}
+                      >
+                        <ThemedText style={{ color: '#FFFFFF', fontSize: 18, fontWeight: 'bold' }}>✕</ThemedText>
+                      </Pressable>
+                    </View>
+                    
+                    <ThemedText style={[styles.aiWorkoutDetails, { marginBottom: 16, lineHeight: 20 }]}>
+                      {aiWorkout.description}
                     </ThemedText>
-                    <ThemedText style={{ fontSize: 13, color: '#6B7280' }}>
-                      {exercise.sets} sets × {exercise.reps} reps • {exercise.category}
+                    
+                    <ThemedText style={{ fontSize: 16, marginBottom: 12, color: '#FFFFFF', fontWeight: '600' }}>
+                      Exercises:
                     </ThemedText>
-                  </View>
-                ))}
-                
-                <ThemedText style={{ fontSize: 13, color: '#6B7280', marginTop: 8 }}>
-                  ⏱️ Duration: {aiWorkout.estimatedDuration}
-                </ThemedText>
+                    
+                    {aiWorkout.exercises.map((exercise, index) => (
+                      <View key={index} style={{
+                        backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                        padding: 12,
+                        borderRadius: 8,
+                        marginBottom: 8,
+                      }}>
+                        <ThemedText style={{ fontSize: 15, fontWeight: '600', color: '#FFFFFF' }}>
+                          {exercise.name}
+                        </ThemedText>
+                        <ThemedText style={{ fontSize: 13, color: '#FFFFFF', opacity: 0.9, lineHeight: 18 }}>
+                          {exercise.sets} sets × {exercise.reps} reps • {exercise.category}
+                        </ThemedText>
+                      </View>
+                    ))}
+                    
+                    <ThemedText style={{ fontSize: 13, color: '#FFFFFF', marginTop: 12, opacity: 0.9 }}>
+                      ⏱️ Duration: {aiWorkout.estimatedDuration}
+                    </ThemedText>
+
+                    <Pressable
+                      style={{
+                        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                        padding: 12,
+                        borderRadius: 8,
+                        alignItems: 'center',
+                        marginTop: 16,
+                      }}
+                      onPress={startAIWorkout}
+                    >
+                      <ThemedText style={{ color: '#FFFFFF', fontSize: 16, fontWeight: '600' }}>
+                        🏋️ Start This Workout
+                      </ThemedText>
+                    </Pressable>
+                  </ScrollView>
+                </LinearGradient>
               </View>
             )}
 
             {/* Recent Activity */}
-            <ThemedText style={styles.recentActivityHeader}>
+            <ThemedText style={[styles.recentActivityHeader, { marginTop: 32 }]}>
               Recent Activity
             </ThemedText>
 
