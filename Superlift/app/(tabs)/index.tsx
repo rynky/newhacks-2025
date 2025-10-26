@@ -23,6 +23,12 @@ export default function ChatScreen() {
   const coachCardBg = isDarkMode ? '#FFFFFF' : '#FFFFFF';
   const coachTextColor = '#1F2937';
 
+  const quickActions = [
+    "Show my recent workouts",
+    "Recommend a workout",
+    "Give me a strength tip"
+  ];
+
   useEffect(() => {
     Animated.timing(fadeAnim, { toValue: 1, duration: 400, useNativeDriver: true }).start();
   }, []);
@@ -230,6 +236,55 @@ export default function ChatScreen() {
             </Animated.View>
           </ScrollView>
 
+          {/* Quick Action Buttons */}
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={{ marginBottom: 4, maxHeight: 42 }}
+            contentContainerStyle={{
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: 6,
+              paddingHorizontal: 10,
+            }}
+          >
+            {quickActions.map((label, idx) => (
+              <Pressable
+                key={idx}
+                onPress={() => {
+                  setInput(label);
+                  sendMessage();
+                }}
+                android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: true }}
+                style={{
+                  backgroundColor: loading
+                    ? 'rgba(153, 153, 153, 0.3)'
+                    : 'rgba(0, 122, 255, 0.3)',
+                  paddingHorizontal: 12,
+                  height: 42,
+                  borderRadius: 16,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  minWidth: 50,
+                  paddingVertical: 0,
+                  overflow: 'hidden',
+                }}
+              >
+                <ThemedText
+                  style={{
+                    color: '#007AFF',
+                    fontSize: 14,
+                    textAlign: 'center',
+                    backgroundColor: 'transparent',
+                  }}
+                >
+                  {label}
+                </ThemedText>
+              </Pressable>
+            ))}
+          </ScrollView>
+
           {/* Input Bar */}
           <View
             style={{
@@ -238,14 +293,13 @@ export default function ChatScreen() {
               width: "100%",
               gap: 10,
               paddingHorizontal: 0,
-              paddingTop: 12,
+              paddingTop: 8,
               paddingBottom: 10,
               backgroundColor: styles.container.backgroundColor,
               borderTopWidth: 1,
               borderTopColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
             }}
           >
-            {/* Text Input */}
             <TextInput
               placeholder="Ask Coach anything..."
               placeholderTextColor={isDarkMode ? '#6B7280' : '#9CA3AF'}
@@ -271,7 +325,6 @@ export default function ChatScreen() {
               }}
             />
 
-            {/* Send Button */}
             <Pressable
               onPress={sendMessage}
               disabled={loading || !input.trim()}
