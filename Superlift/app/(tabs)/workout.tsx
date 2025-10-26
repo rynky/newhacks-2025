@@ -3,7 +3,7 @@ import { Pressable, ScrollView, Animated, Modal, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { pastWorkouts } from "@/constants/mockWorkouts";
+import { initDB, getAllWorkouts } from '@/database/database';
 import { useAppStyles } from "@/constants/styles";
 import axios from 'axios';
 
@@ -11,6 +11,13 @@ export default function HomeScreen() {
   const styles = useAppStyles();
   const [message, setMessage] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
+  // Types for workouts data coming from the DB
+  interface SetItem { id?: number; setOrder: number; weight: number; reps: number }
+  interface ExerciseItem { id?: number; name: string; sets?: SetItem[] }
+  interface WorkoutItem { id: string; name: string; duration?: string; date?: string; exercises?: ExerciseItem[] }
+
+  const [workouts, setWorkouts] = useState<WorkoutItem[]>([]);
+  const [loadingWorkouts, setLoadingWorkouts] = useState(true);
   const fadeAnim = React.useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -23,6 +30,44 @@ export default function HomeScreen() {
       duration: 400,
       useNativeDriver: true,
     }).start();
+  }, []);
+
+  // Initialize DB and load workouts (initDB auto-seeds mock data once)
+  useEffect(() => {
+    let mounted = true;
+
+    (async () => {
+      try {
+        await initDB();
+        const rows = await getAllWorkouts();
+        if (mounted) setWorkouts(rows || []);
+      } catch (e) {
+        console.log('DB init/load error', e);
+      } finally {
+        if (mounted) setLoadingWorkouts(false);
+      }
+    })();
+
+    return () => { mounted = false; };
+  }, []);
+
+  // Initialize DB and load workouts (initDB auto-seeds mock data once)
+  useEffect(() => {
+    let mounted = true;
+
+    (async () => {
+      try {
+        await initDB();
+        const rows = await getAllWorkouts();
+        if (mounted) setWorkouts(rows || []);
+      } catch (e) {
+        console.log('DB init/load error', e);
+      } finally {
+        if (mounted) setLoadingWorkouts(false);
+      }
+    })();
+
+    return () => { mounted = false; };
   }, []);
 
   return (
@@ -90,22 +135,29 @@ export default function HomeScreen() {
           {/* Past Workouts */}
           <ThemedText style={[styles.title, { marginBottom: 8 }]}>Past Workouts</ThemedText>
 
-          {pastWorkouts.map((routine) => (
-            <ThemedView key={routine.id} style={styles.routineCard}>
+          {loadingWorkouts ? (
+          <ThemedText style={styles.paragraph}>Loading workouts...</ThemedText>
+        ) : (
+          workouts.map((routine: WorkoutItem) => (
+            <ThemedView key={routine.id} style={[styles.routineCard, { width: "100%", marginBottom: 10 }]}> 
               <ThemedText style={styles.subtitle}>{routine.name}</ThemedText>
-              <ThemedText style={[styles.paragraph, { opacity: 0.7, marginTop: 4 }]}>
-                {routine.duration} • {new Date(routine.date).toLocaleDateString()}
-              </ThemedText>
-
-              <ThemedView style={{ marginTop: 12, gap: 6 }}>
-                {routine.exercises.map((exercise, index) => (
-                  <ThemedText key={index} style={[styles.paragraph, { opacity: 0.9 }]}>
-                    {exercise.sets.length}x {exercise.name}
+              <ThemedText style={[styles.paragraph, { opacity: 0.7, marginTop: 4 }]}>Duration: {routine.duration}</ThemedText>
+              <ThemedText style={[styles.paragraph, { opacity: 0.7 }]}>Date: {routine.date}</ThemedText>
+              {Array.isArray(routine.exercises) && routine.exercises.map((exercise: ExerciseItem, index: number) => (
+                <ThemedView key={exercise.id ?? index} style={styles.exerciseCard}>
+                  <ThemedText style={[styles.paragraph, { fontWeight: 'bold' }]}>
+                    {exercise.name}
                   </ThemedText>
-                ))}
-              </ThemedView>
+                  {Array.isArray(exercise.sets) && exercise.sets.map((set: SetItem, setIndex: number) => (
+                    <ThemedText key={set.id ?? setIndex} style={[styles.paragraph, { marginLeft: 10, opacity: 0.8 }]}>
+                      Set {set.setOrder}: {set.weight} lbs × {set.reps} reps
+                    </ThemedText>
+                  ))}
+                </ThemedView>
+              ))}
             </ThemedView>
-          ))}
+          ))
+        )}
         </Animated.View>
       </ScrollView>
       </ThemedView>
