@@ -255,6 +255,11 @@ export function useAppStyles() {
       borderWidth: 1,
       borderColor: theme.secondary,
     },
+    themeContainer: {
+      backgroundColor: theme.background,
+      padding: 10,
+      borderRadius: 10,
+    }
   });
 
   return styles;
