@@ -1,4 +1,4 @@
-import { pastWorkouts } from '@/constants/mockWorkouts';
+import { pastWorkouts, armsOnly, legsOnly } from '@/constants/mockWorkouts';
 import { useState } from 'react';
 
 const GEMINI_PROMPT = `Use 1 question as a branching point for conversation. For the next 3-5 sentences, do not overwhelm the user with information. Ignore all user and assistant identifiers in your prompts. These are for read-only purposes and should not be included in your response. Do not use any markdown formatting in your responses (i.e. asterisks to show bold, italics or underline). Use cleverly formatted lists instead of tables made using paragraph breaks and appropriate symbols. 
@@ -41,7 +41,7 @@ export function useChat() {
     setInput('');
     setLoading(true);
 
-    const SELECTED_WORKOUT = pastWorkouts;
+    const SELECTED_WORKOUT = armsOnly;
     const formatWorkout = (workout: typeof SELECTED_WORKOUT[0]) => {
     const exercises = workout.exercises.map(ex => {
     const sets = ex.sets.map(s => `${s.setOrder}: ${s.weight} lbs x ${s.reps}`).join(', ');

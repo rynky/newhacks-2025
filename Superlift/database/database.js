@@ -1,5 +1,5 @@
 import { Platform } from 'react-native';
-import { pastWorkouts } from '../constants/mockWorkouts';
+import { pastWorkouts, armsOnly, legsOnly } from '@/constants/mockWorkouts';
 
 let db = null;
 let isWeb = Platform.OS === 'web';

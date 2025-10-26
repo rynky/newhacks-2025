@@ -195,3 +195,282 @@ export const pastWorkouts = [
     ]
   }
 ];
+
+export const armsOnly = [
+  {
+    id: "1",
+    name: "Biceps Focus",
+    duration: "40min",
+    date: getDateDaysAgo(1),
+    exercises: [
+      {
+        name: "Barbell Curl",
+        sets: [
+          { setOrder: 1, weight: 40, reps: 12 },
+          { setOrder: 2, weight: 45, reps: 10 },
+          { setOrder: 3, weight: 50, reps: 8 }
+        ]
+      },
+      {
+        name: "Incline Dumbbell Curl",
+        sets: [
+          { setOrder: 1, weight: 20, reps: 10 },
+          { setOrder: 2, weight: 20, reps: 10 },
+          { setOrder: 3, weight: 25, reps: 8 }
+        ]
+      },
+      {
+        name: "Hammer Curl",
+        sets: [
+          { setOrder: 1, weight: 25, reps: 12 },
+          { setOrder: 2, weight: 25, reps: 10 },
+          { setOrder: 3, weight: 30, reps: 8 }
+        ]
+      }
+    ]
+  },
+  {
+    id: "2",
+    name: "Triceps Focus",
+    duration: "42min",
+    date: getDateDaysAgo(3),
+    exercises: [
+      {
+        name: "Tricep Dips (Bodyweight)",
+        sets: [
+          { setOrder: 1, weight: 0, reps: 15 },
+          { setOrder: 2, weight: 0, reps: 12 },
+          { setOrder: 3, weight: 0, reps: 10 }
+        ]
+      },
+      {
+        name: "Overhead Tricep Extension (Dumbbell)",
+        sets: [
+          { setOrder: 1, weight: 30, reps: 12 },
+          { setOrder: 2, weight: 35, reps: 10 },
+          { setOrder: 3, weight: 35, reps: 8 }
+        ]
+      },
+      {
+        name: "Tricep Pushdown (Cable)",
+        sets: [
+          { setOrder: 1, weight: 40, reps: 12 },
+          { setOrder: 2, weight: 45, reps: 10 },
+          { setOrder: 3, weight: 50, reps: 8 }
+        ]
+      }
+    ]
+  },
+  {
+    id: "3",
+    name: "Arms Superset Day",
+    duration: "50min",
+    date: getDateDaysAgo(5),
+    exercises: [
+      {
+        name: "Close-Grip Bench Press",
+        sets: [
+          { setOrder: 1, weight: 95, reps: 10 },
+          { setOrder: 2, weight: 105, reps: 8 },
+          { setOrder: 3, weight: 115, reps: 6 }
+        ]
+      },
+      {
+        name: "Cable Curl",
+        sets: [
+          { setOrder: 1, weight: 35, reps: 12 },
+          { setOrder: 2, weight: 40, reps: 10 },
+          { setOrder: 3, weight: 45, reps: 8 }
+        ]
+      },
+      {
+        name: "Skull Crushers (EZ Bar)",
+        sets: [
+          { setOrder: 1, weight: 45, reps: 10 },
+          { setOrder: 2, weight: 50, reps: 8 },
+          { setOrder: 3, weight: 55, reps: 6 }
+        ]
+      },
+      {
+        name: "Concentration Curl",
+        sets: [
+          { setOrder: 1, weight: 20, reps: 12 },
+          { setOrder: 2, weight: 25, reps: 10 },
+          { setOrder: 3, weight: 25, reps: 8 }
+        ]
+      }
+    ]
+  },
+  {
+    id: "4",
+    name: "Pump & Burn",
+    duration: "35min",
+    date: getDateDaysAgo(7),
+    exercises: [
+      {
+        name: "Preacher Curl (Machine)",
+        sets: [
+          { setOrder: 1, weight: 50, reps: 12 },
+          { setOrder: 2, weight: 55, reps: 10 },
+          { setOrder: 3, weight: 60, reps: 8 }
+        ]
+      },
+      {
+        name: "Rope Overhead Tricep Extension",
+        sets: [
+          { setOrder: 1, weight: 35, reps: 12 },
+          { setOrder: 2, weight: 40, reps: 10 },
+          { setOrder: 3, weight: 45, reps: 8 }
+        ]
+      },
+      {
+        name: "Reverse Curl (EZ Bar)",
+        sets: [
+          { setOrder: 1, weight: 30, reps: 12 },
+          { setOrder: 2, weight: 35, reps: 10 },
+          { setOrder: 3, weight: 35, reps: 8 }
+        ]
+      }
+    ]
+  }
+];
+
+export const legsOnly = [
+  {
+    id: "1",
+    name: "Quad Dominant Day",
+    duration: "50min",
+    date: getDateDaysAgo(1),
+    exercises: [
+      {
+        name: "Back Squat (Barbell)",
+        sets: [
+          { setOrder: 1, weight: 135, reps: 10 },
+          { setOrder: 2, weight: 155, reps: 8 },
+          { setOrder: 3, weight: 175, reps: 6 },
+          { setOrder: 4, weight: 155, reps: 8 }
+        ]
+      },
+      {
+        name: "Leg Press (Machine)",
+        sets: [
+          { setOrder: 1, weight: 200, reps: 12 },
+          { setOrder: 2, weight: 220, reps: 10 },
+          { setOrder: 3, weight: 240, reps: 8 }
+        ]
+      },
+      {
+        name: "Walking Lunges (Dumbbell)",
+        sets: [
+          { setOrder: 1, weight: 30, reps: 20 },
+          { setOrder: 2, weight: 35, reps: 16 },
+          { setOrder: 3, weight: 35, reps: 16 }
+        ]
+      }
+    ]
+  },
+  {
+    id: "2",
+    name: "Hamstring & Glutes",
+    duration: "45min",
+    date: getDateDaysAgo(3),
+    exercises: [
+      {
+        name: "Romanian Deadlift (Dumbbell)",
+        sets: [
+          { setOrder: 1, weight: 60, reps: 10 },
+          { setOrder: 2, weight: 70, reps: 8 },
+          { setOrder: 3, weight: 70, reps: 8 }
+        ]
+      },
+      {
+        name: "Hip Thrust (Barbell)",
+        sets: [
+          { setOrder: 1, weight: 135, reps: 12 },
+          { setOrder: 2, weight: 155, reps: 10 },
+          { setOrder: 3, weight: 175, reps: 8 }
+        ]
+      },
+      {
+        name: "Leg Curl (Machine)",
+        sets: [
+          { setOrder: 1, weight: 60, reps: 12 },
+          { setOrder: 2, weight: 70, reps: 10 },
+          { setOrder: 3, weight: 75, reps: 8 }
+        ]
+      }
+    ]
+  },
+  {
+    id: "3",
+    name: "Athletic Leg Power",
+    duration: "55min",
+    date: getDateDaysAgo(5),
+    exercises: [
+      {
+        name: "Front Squat (Barbell)",
+        sets: [
+          { setOrder: 1, weight: 95, reps: 10 },
+          { setOrder: 2, weight: 115, reps: 8 },
+          { setOrder: 3, weight: 125, reps: 6 }
+        ]
+      },
+      {
+        name: "Bulgarian Split Squat (Dumbbell)",
+        sets: [
+          { setOrder: 1, weight: 25, reps: 10 },
+          { setOrder: 2, weight: 30, reps: 8 },
+          { setOrder: 3, weight: 30, reps: 8 }
+        ]
+      },
+      {
+        name: "Step-Ups (Weighted)",
+        sets: [
+          { setOrder: 1, weight: 25, reps: 12 },
+          { setOrder: 2, weight: 25, reps: 10 },
+          { setOrder: 3, weight: 30, reps: 8 }
+        ]
+      },
+      {
+        name: "Calf Raises (Standing)",
+        sets: [
+          { setOrder: 1, weight: 0, reps: 20 },
+          { setOrder: 2, weight: 0, reps: 18 },
+          { setOrder: 3, weight: 0, reps: 15 }
+        ]
+      }
+    ]
+  },
+  {
+    id: "4",
+    name: "Leg Endurance & Burnout",
+    duration: "40min",
+    date: getDateDaysAgo(7),
+    exercises: [
+      {
+        name: "Goblet Squat",
+        sets: [
+          { setOrder: 1, weight: 40, reps: 15 },
+          { setOrder: 2, weight: 45, reps: 12 },
+          { setOrder: 3, weight: 50, reps: 10 }
+        ]
+      },
+      {
+        name: "Leg Extension (Machine)",
+        sets: [
+          { setOrder: 1, weight: 70, reps: 15 },
+          { setOrder: 2, weight: 80, reps: 12 },
+          { setOrder: 3, weight: 85, reps: 10 }
+        ]
+      },
+      {
+        name: "Seated Calf Raise (Machine)",
+        sets: [
+          { setOrder: 1, weight: 70, reps: 15 },
+          { setOrder: 2, weight: 80, reps: 12 },
+          { setOrder: 3, weight: 85, reps: 10 }
+        ]
+      }
+    ]
+  }
+];
