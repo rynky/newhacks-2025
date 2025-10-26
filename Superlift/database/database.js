@@ -16,6 +16,7 @@ const getWebDB = () => {
     }
     return JSON.parse(data);
   } catch (e) {
+    console.log('Error getting web DB:', e);
     return { workouts: [], exercises: [], sets: [], nextExerciseId: 1, nextSetId: 1 };
   }
 };
@@ -343,26 +344,52 @@ const insertWorkoutNative = async (workout) => {
 
 // Delete a workout
 export const deleteWorkout = async (id) => {
+  console.log('🗑️ Attempting to delete workout with id:', id);
+  
   if (isWeb) {
+    console.log('🌐 Using web deletion');
     return deleteWorkoutWeb(id);
   }
+  
+  console.log('📱 Using native deletion');
   return deleteWorkoutNative(id);
 };
 
 // Delete workout on web
 const deleteWorkoutWeb = async (id) => {
-  const webDB = getWebDB();
+  try {
+    const webDB = getWebDB();
+    console.log('📊 Before deletion - Workouts count:', webDB.workouts.length);
+    console.log('📊 Before deletion - Exercises count:', webDB.exercises.length);
+    console.log('📊 Before deletion - Sets count:', webDB.sets.length);
 
-  const exerciseIds = webDB.exercises
-    .filter(e => e.workoutId === id)
-    .map(e => e.id);
+    // Get all exercise IDs for this workout
+    const exerciseIds = webDB.exercises
+      .filter(e => e.workoutId === id)
+      .map(e => e.id);
 
-  webDB.sets = webDB.sets.filter(s => !exerciseIds.includes(s.exerciseId));
-  webDB.exercises = webDB.exercises.filter(e => e.workoutId !== id);
-  webDB.workouts = webDB.workouts.filter(w => w.id !== id);
+    console.log('🔍 Found exercise IDs to delete:', exerciseIds);
 
-  saveWebDB(webDB);
-  return true;
+    // Delete sets for these exercises
+    webDB.sets = webDB.sets.filter(s => !exerciseIds.includes(s.exerciseId));
+    
+    // Delete exercises for this workout
+    webDB.exercises = webDB.exercises.filter(e => e.workoutId !== id);
+    
+    // Delete the workout itself
+    webDB.workouts = webDB.workouts.filter(w => w.id !== id);
+
+    console.log('📊 After deletion - Workouts count:', webDB.workouts.length);
+    console.log('📊 After deletion - Exercises count:', webDB.exercises.length);
+    console.log('📊 After deletion - Sets count:', webDB.sets.length);
+
+    saveWebDB(webDB);
+    console.log('✅ Web deletion completed successfully');
+    return true;
+  } catch (error) {
+    console.error('❌ Error in deleteWorkoutWeb:', error);
+    return false;
+  }
 };
 
 // Delete workout on native
@@ -371,22 +398,54 @@ const deleteWorkoutNative = async (id) => {
   if (!database) return false;
 
   try {
+    console.log('🗃️ Starting native deletion for workout:', id);
+    
+    // Get all exercises for this workout
     const exercises = database.getAllSync(
       'SELECT id FROM exercises WHERE workoutId = ?',
       [id]
     );
 
+    console.log('🔍 Found exercises to delete:', exercises);
+
+    // Delete sets for each exercise
     for (const exercise of exercises) {
       database.runSync('DELETE FROM sets WHERE exerciseId = ?', [exercise.id]);
     }
 
+    // Delete exercises
     database.runSync('DELETE FROM exercises WHERE workoutId = ?', [id]);
+    
+    // Delete workout
     database.runSync('DELETE FROM workouts WHERE id = ?', [id]);
 
+    console.log('✅ Native deletion completed successfully');
     return true;
   } catch (error) {
-    console.error('Error deleting workout:', error);
+    console.error('❌ Error deleting workout:', error);
     return false;
+  }
+};
+
+// Debug function to check current state
+export const debugDB = async () => {
+  if (isWeb) {
+    const webDB = getWebDB();
+    console.log('🐛 DEBUG Web DB:', {
+      workouts: webDB.workouts,
+      exercises: webDB.exercises,
+      sets: webDB.sets,
+      nextExerciseId: webDB.nextExerciseId,
+      nextSetId: webDB.nextSetId
+    });
+  } else {
+    const database = getDB();
+    if (database) {
+      const workouts = database.getAllSync('SELECT * FROM workouts');
+      const exercises = database.getAllSync('SELECT * FROM exercises');
+      const sets = database.getAllSync('SELECT * FROM sets');
+      console.log('🐛 DEBUG Native DB:', { workouts, exercises, sets });
+    }
   }
 };
 
@@ -394,5 +453,6 @@ export default {
   initDB,
   getAllWorkouts,
   insertWorkout,
-  deleteWorkout
+  deleteWorkout,
+  debugDB
 };

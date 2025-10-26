@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Pressable, ScrollView, Animated, View, ActivityIndicator, Platform, Dimensions } from 'react-native';
+import { Pressable, ScrollView, Animated, View, ActivityIndicator, Platform, Dimensions, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { initDB, getAllWorkouts, insertWorkout } from '@/database/database';
+import { initDB, getAllWorkouts, insertWorkout, deleteWorkout, debugDB } from '@/database/database';
 import { useAppStyles } from "@/constants/styles";
 import WorkoutModal from '@/components/WorkoutModal';
 import { EXERCISE_LIBRARY } from '@/constants/exerciseLibrary';
@@ -33,6 +33,7 @@ export default function HomeScreen() {
   const [loadingAI, setLoadingAI] = useState(false);
   const [showAISuggestion, setShowAISuggestion] = useState(false);
   const [selectedExercises, setSelectedExercises] = useState<any[]>([]);
+  const [expandedWorkouts, setExpandedWorkouts] = useState<Set<string>>(new Set());
   const fadeAnim = React.useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -43,6 +44,28 @@ export default function HomeScreen() {
     }).start();
   }, []);
 
+  // Toggle workout expansion
+  const toggleWorkoutExpansion = (workoutId: string) => {
+    const newExpanded = new Set(expandedWorkouts);
+    if (newExpanded.has(workoutId)) {
+      newExpanded.delete(workoutId);
+    } else {
+      newExpanded.add(workoutId);
+    }
+    setExpandedWorkouts(newExpanded);
+  };
+
+  // Load workouts function that can be called multiple times
+  const loadWorkouts = async () => {
+    try {
+      const rows = await getAllWorkouts();
+      console.log('[workout] loaded workouts', Array.isArray(rows) ? rows.length : typeof rows, rows);
+      setWorkouts(rows || []);
+    } catch (e) {
+      console.log('Error loading workouts:', e);
+    }
+  };
+
   // Initialize DB and load workouts (initDB auto-seeds mock data once)
   useEffect(() => {
     let mounted = true;
@@ -50,10 +73,8 @@ export default function HomeScreen() {
     (async () => {
       try {
         await initDB();
-        const rows = await getAllWorkouts();
         if (mounted) {
-          console.log('[workout] loaded workouts', Array.isArray(rows) ? rows.length : typeof rows, rows);
-          setWorkouts(rows || []);
+          await loadWorkouts();
         }
       } catch (e) {
         console.log('DB init/load error', e);
@@ -89,8 +110,7 @@ export default function HomeScreen() {
       await insertWorkout(workoutData);
 
       // Refresh workout list
-      const updatedWorkouts = await getAllWorkouts();
-      setWorkouts(updatedWorkouts || []);
+      await loadWorkouts();
 
       // Close modal and reset selected exercises
       setModalVisible(false);
@@ -231,6 +251,53 @@ Format your response as JSON with the following structure:
 
     setSelectedExercises(exercisesForModal);
     setModalVisible(true);
+  };
+
+  // Delete workout function
+  const handleDeleteWorkout = async (workoutId: string, workoutName: string) => {
+    Alert.alert(
+      "Delete Workout",
+      `Are you sure you want to delete "${workoutName}"?`,
+      [
+        {
+          text: "Cancel",
+          style: "cancel"
+        },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              console.log('🗑️ Starting deletion process for:', workoutId);
+              
+              // Debug before deletion
+              await debugDB();
+              
+              // Delete the workout
+              const success = await deleteWorkout(workoutId);
+              
+              if (success) {
+                console.log('✅ Deletion successful, refreshing list...');
+                
+                // Debug after deletion
+                await debugDB();
+                
+                // Refresh workout list
+                await loadWorkouts();
+                
+                console.log('✅ Workout list refreshed');
+              } else {
+                console.error('❌ Deletion failed');
+                alert('Failed to delete workout');
+              }
+            } catch (error) {
+              console.error('❌ Error deleting workout:', error);
+              alert('Failed to delete workout');
+            }
+          }
+        }
+      ]
+    );
   };
 
   return (
@@ -389,35 +456,147 @@ Format your response as JSON with the following structure:
             )}
 
             {/* Recent Activity */}
-            <ThemedText style={[styles.recentActivityHeader, { marginTop: 32 }]}>
+            <ThemedText style={[styles.recentActivityHeader, { marginTop: 32, marginBottom: 16, fontSize: 22, fontWeight: '700' }]}>
               Recent Activity
             </ThemedText>
 
             {loadingWorkouts ? (
-              <ThemedText style={styles.paragraph}>Loading workouts...</ThemedText>
+              <ThemedText style={[styles.paragraph, { textAlign: 'center', paddingVertical: 20 }]}>
+                Loading workouts...
+              </ThemedText>
+            ) : workouts.length === 0 ? (
+              <ThemedText style={[styles.paragraph, { textAlign: 'center', paddingVertical: 20, fontSize: 16, lineHeight: 24 }]}>
+                No workouts yet.{'\n'}Start your first workout above!
+              </ThemedText>
             ) : (
               workouts.map((workout) => (
-                <View key={workout.id} style={styles.activityCard}>
-                  <View style={styles.activityCardHeader}>
-                    <ThemedText style={styles.activityTitle}>
-                      {workout.name}
-                    </ThemedText>
-                    <Pressable onPress={() => console.log('View details:', workout.id)}>
-                      <ThemedText style={styles.viewDetailsLink}>
-                        View Details &gt;
+                <View key={workout.id} style={[
+                  styles.activityCard,
+                  { 
+                    marginBottom: 16,
+                    borderRadius: 12,
+                    overflow: 'hidden',
+                    backgroundColor: styles.activityCard.backgroundColor,
+                  }
+                ]}>
+                  {/* Workout Header - Always Visible */}
+                  <Pressable 
+                    onPress={() => toggleWorkoutExpansion(workout.id)}
+                    style={{
+                      padding: 16,
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      alignItems: 'flex-start',
+                    }}
+                  >
+                    <View style={{ flex: 1, marginRight: 12 }}>
+                      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
+                        <ThemedText style={[styles.activityTitle, { fontSize: 18, fontWeight: '600', flex: 1 }]}>
+                          {workout.name}
+                        </ThemedText>
+                      </View>
+                      
+                      <ThemedText style={[styles.activityTimestamp, { fontSize: 14, opacity: 0.7, marginBottom: 8 }]}>
+                        {getRelativeDate(workout.date)}
                       </ThemedText>
-                    </Pressable>
-                  </View>
 
-                  <ThemedText style={styles.activityTimestamp}>
-                    {getRelativeDate(workout.date)}
-                  </ThemedText>
+                      <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+                        <ThemedText style={[styles.activityExerciseList, { fontSize: 14, marginRight: 16 }]}>
+                          {workout.exercises?.length || 0} exercises
+                        </ThemedText>
+                        <ThemedText style={[styles.activityExerciseList, { fontSize: 14, opacity: 0.8 }]}>
+                          {expandedWorkouts.has(workout.id) ? 'Tap to collapse' : 'Tap to expand'}
+                        </ThemedText>
+                      </View>
+                    </View>
 
-                  {workout.exercises && workout.exercises.map((exercise: any, index: number) => (
-                    <ThemedText key={index} style={styles.activityExerciseList}>
-                      {exercise.sets?.length || 0}x {exercise.name}
-                    </ThemedText>
-                  ))}
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                      <Pressable 
+                        onPress={(e) => {
+                          e.stopPropagation();
+                          handleDeleteWorkout(workout.id, workout.name);
+                        }}
+                        style={{ padding: 4 }}
+                      >
+                        <ThemedText style={{ color: '#FF3B30', fontSize: 18 }}>
+                          🗑️
+                        </ThemedText>
+                      </Pressable>
+                      <ThemedText style={{ fontSize: 18, opacity: 0.7, minWidth: 20, textAlign: 'center' }}>
+                        {expandedWorkouts.has(workout.id) ? '▲' : '▼'}
+                      </ThemedText>
+                    </View>
+                  </Pressable>
+
+                  {/* Expanded Content */}
+                  {expandedWorkouts.has(workout.id) && (
+                    <View style={{
+                      padding: 16,
+                      paddingTop: 0,
+                      borderTopWidth: 1,
+                      borderTopColor: 'rgba(0,0,0,0.1)',
+                    }}>
+                      {workout.exercises && workout.exercises.map((exercise: any, exerciseIndex: number) => (
+                        <View key={exerciseIndex} style={{
+                          marginBottom: 16,
+                          padding: 12,
+                          backgroundColor: 'rgba(0,0,0,0.03)',
+                          borderRadius: 8,
+                        }}>
+                          {/* Exercise Header */}
+                          <View style={{ marginBottom: 8 }}>
+                            <ThemedText style={{ fontSize: 16, fontWeight: '600', marginBottom: 4 }}>
+                              {exercise.name}
+                            </ThemedText>
+                            {exercise.sets && exercise.sets.length > 0 && (
+                              <ThemedText style={{ fontSize: 14, opacity: 0.7 }}>
+                                {exercise.sets.length} sets
+                              </ThemedText>
+                            )}
+                          </View>
+
+                          {/* Sets Details */}
+                          {exercise.sets && exercise.sets.length > 0 ? (
+                            <View style={{ gap: 6 }}>
+                              {exercise.sets.map((set: any, setIndex: number) => (
+                                <View key={setIndex} style={{
+                                  flexDirection: 'row',
+                                  justifyContent: 'space-between',
+                                  alignItems: 'center',
+                                  paddingVertical: 6,
+                                  paddingHorizontal: 8,
+                                  backgroundColor: 'rgba(255,255,255,0.5)',
+                                  borderRadius: 6,
+                                }}>
+                                  <ThemedText style={{ fontSize: 14, fontWeight: '500', minWidth: 60 }}>
+                                    Set {set.setOrder}
+                                  </ThemedText>
+                                  <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-around' }}>
+                                    <ThemedText style={{ fontSize: 14, fontWeight: '500' }}>
+                                      {set.weight} lbs
+                                    </ThemedText>
+                                    <ThemedText style={{ fontSize: 14, fontWeight: '500' }}>
+                                      {set.reps} reps
+                                    </ThemedText>
+                                  </View>
+                                </View>
+                              ))}
+                            </View>
+                          ) : (
+                            <ThemedText style={{ fontSize: 14, opacity: 0.6, fontStyle: 'italic', textAlign: 'center', paddingVertical: 8 }}>
+                              No sets recorded
+                            </ThemedText>
+                          )}
+                        </View>
+                      ))}
+                      
+                      {(!workout.exercises || workout.exercises.length === 0) && (
+                        <ThemedText style={{ fontSize: 14, opacity: 0.6, fontStyle: 'italic', textAlign: 'center', paddingVertical: 16 }}>
+                          No exercises recorded for this workout
+                        </ThemedText>
+                      )}
+                    </View>
+                  )}
                 </View>
               ))
             )}
