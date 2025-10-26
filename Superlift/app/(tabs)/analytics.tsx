@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppStyles } from '@/constants/styles';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import ExampleChart from '@/app/LineChartExample';
 
 export default function AnalyticsScreen() {
   const styles = useAppStyles();
@@ -32,7 +33,7 @@ export default function AnalyticsScreen() {
         <Animated.View style={{ opacity: fadeAnim }}>
           {/* Strength Score Card */}
           <View style={styles.statCard}>
-            <ThemedText style={styles.subtitle}>Your Strength Score</ThemedText>
+            <ThemedText style={ styles.subtitle }>Your Strength Score</ThemedText>
             <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 12, flexWrap: 'wrap' }}>
               <ThemedText style={[styles.largeNumber, { flexShrink: 1 }]}>
                 {strengthScore.toLocaleString()}
@@ -48,11 +49,9 @@ export default function AnalyticsScreen() {
 
           {/* Chart Card */}
           <View style={styles.card}>
-            <ThemedText style={styles.subtitle}>Strength Score - Monthly View</ThemedText>
+            <ThemedText style={[styles.subtitle, { paddingBottom: 15 }]}>Strength Score - Monthly View</ThemedText>
             <View style={styles.chartPlaceholder}>
-              <ThemedText style={[styles.paragraph, { opacity: 0.5 }]}>
-                [Chart Coming Soon]
-              </ThemedText>
+              <ExampleChart/>
             </View>
           </View>
 
