@@ -42,7 +42,7 @@ We're helping users progress, recover smarter, and stay consistent.
 
 ```bash
 # 1️⃣ Clone the repository
-git clone https://github.com/<your-username>/superlift.git
+git clone https://github.com/rynky/newhacks-2025
 
 # 2️⃣ Navigate into the project folder
 cd superlift
